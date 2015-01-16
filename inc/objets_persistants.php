@@ -11,9 +11,12 @@
 if (!defined('_ECRIRE_INC_VERSION')) return;
 
 /**
- * Créer des objets persistants
+ * Créer ou modifier des objets persistants
  *
- * Description longue
+ * On prend les objets l'un après l'autre, et si une méta existe déjà
+ * on ne fait rien. Sinon on cherche si un objet existant correspond à
+ * la description, et si on ne trouve vraiment rien on crée un nouvel
+ * objet persistant.
  *
  * @param String $nom_meta : Le nom de la meta dans laquelle seront
  *                           stocké les objets persistants
@@ -23,10 +26,13 @@ if (!defined('_ECRIRE_INC_VERSION')) return;
  *                        au moins une clé 'objet'. Le reste des
  *                        valeurs de ce tableau définissent les
  *                        valeurs des champs de l'objet.
+ * @param bool $forcer_maj : permet de forcer une mise à jour de
+ *                           l'objet même s'il existe déjà dans les
+ *                           métas.
  *
  * @exemple :
  *
-objets_persistants_creer('meta_test', array(
+objets_persistants_modifier('meta_test', array(
     'rubrique_hors_menu' => array(
         'objet' => 'rubrique',
         'titre' => "99. Hors-menu",
@@ -40,24 +46,26 @@ objets_persistants_creer('meta_test', array(
  * @return mixed : Un message d'erreur si quelque chose s'est mal
  *                 passé, rien sinon.
  */
-function objets_persistants_creer ($nom_meta, $objets) {
+function objets_persistants_modifier ($nom_meta, $objets, $forcer_maj=FALSE) {
 
     include_spip('inc/config');
+    include_spip('base/abstract_sql');
+    include_spip('action/editer_objet');
 
     foreach ($objets as $nom_objet => $objet) {
-        if ( ! lire_config($nom_meta . '/' . $nom_objet)) {
 
-            if ( ! isset($objet['objet'])) {
-                spip_log("objet persistant mal défini : $nom_objet");
-                return "erreur : $nom_objet n'a pas de clé 'objet'";
-            }
+        if ( ! isset($objet['objet'])) {
+            spip_log("objet persistant mal défini : $nom_objet");
+            return "erreur : $nom_objet n'a pas de clé 'objet'";
+        }
 
-            include_spip('base/abstract_sql');
-            include_spip('action/editer_objet');
+        $type_objet = $objet['objet'];
+        unset($objet['objet']);
 
-            $type_objet = $objet['objet'];
-            unset($objet['objet']);
+        if ( ! $id_objet = lire_config($nom_meta . '/' . $nom_objet)) {
 
+            /* S'il y a déjà un objet correspondant à la description
+               on le prend */
             $id_objet = sql_getfetsel(
                 id_table_objet($type_objet),
                 table_objet_sql($type_objet),
@@ -72,6 +80,11 @@ function objets_persistants_creer ($nom_meta, $objets) {
 
             maj_meta($nom_meta, $nom_objet, $id_objet);
 
+        } else if ($forcer_maj) {
+            if ($err = objet_modifier($type_objet, $id_objet, $objet)) {
+                return $err;
+            }
+            maj_meta($nom_meta, $nom_objet, $id_objet);
         }
     }
 }
