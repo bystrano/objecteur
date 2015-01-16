@@ -1,0 +1,23 @@
+<paquet
+  prefix="objets_persistants"
+  categorie="outil"
+  version="0.0.1"
+  etat="dev"
+  compatibilite="[3.0.17;3.0.*]"
+  logo=""
+  documentation=""
+>
+  <!--
+    Paquet genere le 2015-01-16 19:22:52
+  -->
+
+  <nom>Objets Persistants</nom>
+
+  <auteur>Michel Bystranowski</auteur>
+
+  <licence>GNU/GPL</licence>
+
+  <pipeline nom="autoriser" inclure="objets_persistants_autorisations.php" />
+
+
+</paquet>
