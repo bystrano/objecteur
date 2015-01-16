@@ -15,3 +15,9 @@ On ne peux pas repartir de zéro sans recréer ces objets à la main et mettre �
 
 Il peut aussi arriver que des utilisateurs du site suppriment des objets éditoriaux nécessaires au fonctionnement du site.
 `TODO` Pour éviter ce genre de problèmes, on interdit aux non-webmestres de supprimer les objets éditoriaux persistants créés via l'API.
+
+Créer des objets persistants
+----------------------------
+
+On peut créer des objets persistants avec la fonction `objets_persistants_creer` qui se trouve dans le fichier `inc/objets_persistants.php`.
+Cette fonction reçoit deux paramètres, `$nom_meta`, qui est le nom de la meta qui sera utilisée pour enregistrer les identifiants, et `$objets`, qui est un tableau qui définit les objets éditoriaux persistants.
