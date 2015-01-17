@@ -13,7 +13,7 @@ if (!defined('_ECRIRE_INC_VERSION')) return;
 /**
  * Créer ou modifier des objets persistants
  *
- * On prend les objets l'un après l'autre, et si une méta existe déjà
+ * On prend les objets l'un après l'autre, et s'il y a déjà une méta
  * on ne fait rien. Sinon on cherche si un objet existant correspond à
  * la description, et si on ne trouve vraiment rien on crée un nouvel
  * objet persistant.
@@ -32,7 +32,7 @@ if (!defined('_ECRIRE_INC_VERSION')) return;
  *
  * @exemple :
  *
-objets_persistants_modifier('meta_test', array(
+maj_objets_persistants('meta_test', array(
     'rubrique_hors_menu' => array(
         'objet' => 'rubrique',
         'titre' => "99. Hors-menu",
@@ -46,7 +46,7 @@ objets_persistants_modifier('meta_test', array(
  * @return mixed : Un message d'erreur si quelque chose s'est mal
  *                 passé, rien sinon.
  */
-function objets_persistants_modifier ($nom_meta, $objets, $forcer_maj=FALSE) {
+function maj_objets_persistants ($nom_meta, $objets, $forcer_maj=FALSE) {
 
     include_spip('inc/config');
     include_spip('base/abstract_sql');
@@ -55,7 +55,7 @@ function objets_persistants_modifier ($nom_meta, $objets, $forcer_maj=FALSE) {
     foreach ($objets as $nom_objet => $objet) {
 
         if ( ! isset($objet['objet'])) {
-            spip_log("objet persistant mal défini : $nom_objet");
+            spip_log("objet persistant mal défini : $nom_objet", _LOG_ERREUR);
             return "erreur : $nom_objet n'a pas de clé 'objet'";
         }
 
@@ -65,7 +65,7 @@ function objets_persistants_modifier ($nom_meta, $objets, $forcer_maj=FALSE) {
         if ( ! $id_objet = lire_config($nom_meta . '/' . $nom_objet)) {
 
             /* S'il y a déjà un objet correspondant à la description
-               on le prend */
+               on le prend plutôt que d'en créer un nouveau */
             $id_objet = sql_getfetsel(
                 id_table_objet($type_objet),
                 table_objet_sql($type_objet),
@@ -73,6 +73,7 @@ function objets_persistants_modifier ($nom_meta, $objets, $forcer_maj=FALSE) {
                     return $index . '=' . sql_quote($element);
                 }, array_keys($objet), $objet));
 
+            /* Création d'un nouvel objet persistant */
             if ( ! $id_objet) {
 
                 if (array_key_exists(id_parent_objet($type_objet), $objet)) {
@@ -104,6 +105,7 @@ function objets_persistants_modifier ($nom_meta, $objets, $forcer_maj=FALSE) {
             maj_meta($nom_meta, $nom_objet, $id_objet);
 
         } else if ($forcer_maj) {
+            /* Mise à jour forcée de l'objet persistant */
             if ($err = objet_modifier($type_objet, $id_objet, $objet)) {
                 return $err;
             }
@@ -118,7 +120,7 @@ function objets_persistants_modifier ($nom_meta, $objets, $forcer_maj=FALSE) {
                 return $el;
             }, $objet['enfants']);
 
-            if ($err = objets_persistants_modifier($nom_meta, $enfants, $forcer_maj)) {
+            if ($err = maj_objets_persistants($nom_meta, $enfants, $forcer_maj)) {
                 return $err;
             }
         }
