@@ -74,8 +74,31 @@ function objets_persistants_modifier ($nom_meta, $objets, $forcer_maj=FALSE) {
                 }, array_keys($objet), $objet));
 
             if ( ! $id_objet) {
-                $id_objet = objet_inserer($type_objet);
-                objet_modifier($type_objet, $id_objet, $objet);
+
+                if (array_key_exists(id_parent_objet($type_objet), $objet)) {
+
+                    $id_parent = $objet[id_parent_objet($type_objet)];
+                    unset($objet[id_parent_objet($type_objet)]);
+                }
+
+                if (isset($objet['id_parent'])) {
+
+                    /* On remplace une éventuelle clé 'id_parent' par
+                       la clé le nom du champ id_parent du type
+                       d'objet en question */
+                    $id_parent = $objet['id_parent'];
+                    unset($objet['id_parent']);
+                }
+
+                if ($id_parent) {
+                    $id_objet = objet_inserer($type_objet, $id_parent);
+                } else {
+                    $id_objet = objet_inserer($type_objet);
+                }
+
+                if ($err = objet_modifier($type_objet, $id_objet, $objet)) {
+                    return $err;
+                }
             }
 
             maj_meta($nom_meta, $nom_objet, $id_objet);
@@ -85,6 +108,19 @@ function objets_persistants_modifier ($nom_meta, $objets, $forcer_maj=FALSE) {
                 return $err;
             }
             maj_meta($nom_meta, $nom_objet, $id_objet);
+        }
+
+        /* Gestion des objets enfants */
+        if (isset($objet['enfants'])) {
+
+            $enfants = array_map(function ($el) {
+                $el['id_parent'] = $id_objet;
+                return $el;
+            }, $objet['enfants']);
+
+            if ($err = objets_persistants_modifier($nom_meta, $enfants, $forcer_maj)) {
+                return $err;
+            }
         }
     }
 }
@@ -111,4 +147,25 @@ function maj_meta ($nom_meta, $cle, $valeur) {
     $config[$cle] = $valeur;
 
     ecrire_meta($nom_meta, serialize($config));
+}
+
+/**
+ * Retrouve la clé d'objet parent à partir du nom d'objet
+ *
+ * - article -> id_rubrique
+ * - mot     -> id_groupe
+ *
+ * @api
+ * @param string $type    : Nom de l'objet
+ * @param string $serveur : Nom du connecteur
+ *
+ * @return string : Nom de la clé primaire
+**/
+function id_parent_objet ($type) {
+
+    if (isset($GLOBALS['id_parents_objets'][$type])) {
+        return $GLOBALS['id_parents_objets'][$type];
+    } else {
+        return '';
+    }
 }
