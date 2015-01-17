@@ -59,8 +59,14 @@ function maj_objets_persistants ($nom_meta, $objets, $forcer_maj=FALSE) {
             return "erreur : $nom_objet n'a pas de clé 'objet'";
         }
 
+        /* On met les clés spéciales dans des variables et on les
+           enlève du tableau $objet */
         $type_objet = $objet['objet'];
         unset($objet['objet']);
+        if (isset($objet['enfants'])) {
+            $enfants = $objet['enfants'];
+            unset($objet['enfants']);
+        }
 
         if ( ! $id_objet = lire_config($nom_meta . '/' . $nom_objet)) {
 
@@ -113,12 +119,12 @@ function maj_objets_persistants ($nom_meta, $objets, $forcer_maj=FALSE) {
         }
 
         /* Gestion des objets enfants */
-        if (isset($objet['enfants'])) {
+        if ($enfants) {
 
             $enfants = array_map(function ($el) {
                 $el['id_parent'] = $id_objet;
                 return $el;
-            }, $objet['enfants']);
+            }, $enfants);
 
             if ($err = maj_objets_persistants($nom_meta, $enfants, $forcer_maj)) {
                 return $err;
