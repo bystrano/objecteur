@@ -28,13 +28,19 @@ On peut par exemple créer une rubrique hors-menu qui contient une rubrique agen
 include_spip('inc/objets_persistants');
 
 maj_objets_persistants('mon_site_spip', array(
-    'rubrique_hors_menu' => array(
+    array(
         'objet' => 'rubrique',
-        'titre' => "99. Hors-menu",
-        'enfants' => array(
-            'rubrique_agenda' => array(
+        'options' => array(
+            'nom' => 'rubrique_hors_menu',
+            'titre' => "99. Hors-menu",
+        ),
+        'enfants' =>  array(
+            array(
                 'objet' => 'rubrique',
-                'titre' => 'Agenda',
+                'options' => array(
+                    'nom' => 'rubrique_agenda',
+                    'titre' => 'Agenda',
+                ),
             ),
         ),
     ),
