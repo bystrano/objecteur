@@ -140,7 +140,8 @@ function maj_objets_persistants ($nom_meta, $objets, $forcer_maj=FALSE) {
  * Mettre à jour une meta en tant que tableau
  *
  * On s'en sert pour mettre plein de choses dans une même meta, de
- * façon à ne pas trop polluer la DB.
+ * façon à ne pas trop polluer la DB. Si on omet le paramètre $valeur,
+ * la clé est retirée de la méta
  *
  * @param string
  *     Le nom de la meta
@@ -149,13 +150,18 @@ function maj_objets_persistants ($nom_meta, $objets, $forcer_maj=FALSE) {
  * @param mixed
  *     La valeur de la meta
  */
-function maj_meta ($nom_meta, $cle, $valeur) {
+function maj_meta ($nom_meta, $cle, $valeur=NULL) {
 
     include_spip('inc/meta');
 
     $config = lire_config($nom_meta);
     $config = $config ? $config : array();
-    $config[$cle] = $valeur;
+
+    if (is_null($valeur)) {
+        if (isset($config[$cle])) { unset($config[$cle]); }
+    } else {
+        $config[$cle] = $valeur;
+    }
 
     ecrire_meta($nom_meta, serialize($config));
 }
