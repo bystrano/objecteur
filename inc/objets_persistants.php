@@ -137,6 +137,63 @@ function maj_objets_persistants ($nom_meta, $objets, $forcer_maj=FALSE) {
 }
 
 /**
+ * Effacer les objets persistant corrspondants à une méta donnée.
+ *
+ * @param String $nom_meta : Le nom de la méta.
+ *
+ * @return mixed : Un message d'erreur si quelque chose s'est mal
+ *                 passé, rien sinon.
+ */
+function effacer_objets_persistants ($nom_meta) {
+
+    include_spip('inc/config');
+
+    $objets = lire_config("objets_persistants/$nom_meta");
+
+    if ( ! $objets) { return; }
+
+    foreach ($objets as $nom => $objet) {
+        if ($err = supprimer_objet_persistant($nom_meta, $nom, $objet)) {
+            return $err;
+        }
+    }
+
+    /* supprimer la clé dans la méta 'objets_persistants' */
+    maj_meta('objets_persistants', $nom_meta);
+    effacer_meta($nom_meta);
+}
+
+function supprimer_objet_persistant ($nom_meta, $nom, $objet) {
+
+    include_spip('inc/config');
+    include_spip('base/abstract_sql');
+
+    $type_objet = $objet['objet'];
+    unset($objet['objet']);
+    if (isset($objet['enfants'])) {
+        $enfants = $objet['enfants'];
+        unset($objet['enfants']);
+    }
+
+    if ($enfants) {
+        foreach ($enfants as $nom_enfant => $enfant) {
+            if ($err = supprimer_objet_persistant($nom_meta, $nom_enfant, $enfant)) {
+                return $err;
+            }
+        }
+    }
+
+    $id_objet = lire_config("$nom_meta/$nom");
+
+    if (autoriser('supprimer', $type_objet, $id_objet)) {
+        sql_delete(table_objet_sql($type_objet),
+                   id_table_objet($type_objet) . '=' . intval($id_objet));
+    } else {
+        return "supprimer $type_objet $id_objet : action non autorisée";
+    }
+}
+
+/**
  * Mettre à jour une meta en tant que tableau
  *
  * On s'en sert pour mettre plein de choses dans une même meta, de
