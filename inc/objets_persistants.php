@@ -124,10 +124,9 @@ function maj_objets_persistants ($nom_meta, $objets, $forcer_maj=FALSE) {
         /* Gestion des objets enfants */
         if ($enfants) {
 
-            $enfants = array_map(function ($el) {
-                $el['id_parent'] = $id_objet;
-                return $el;
-            }, $enfants);
+            foreach ($enfants as $i => $enfant) {
+                $enfants[$i]['id_parent'] = $id_objet;
+            }
 
             if ($err = maj_objets_persistants($nom_meta, $enfants, $forcer_maj)) {
                 return $err;
