@@ -118,7 +118,6 @@ function maj_objets_persistants ($nom_meta, $objets, $forcer_maj=FALSE) {
             if ($err = objet_modifier($type_objet, $id_objet, $objet)) {
                 return $err;
             }
-            maj_meta($nom_meta, $nom_objet, $id_objet);
             maj_meta('objets_persistants', $nom_meta, $objets);
         }
 
