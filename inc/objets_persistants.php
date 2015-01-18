@@ -110,15 +110,12 @@ function maj_objets_persistants ($nom_meta, $objets, $forcer_maj=FALSE) {
 
             /* On enregistre les identifiants de l'objet… */
             maj_meta($nom_meta, $nom_objet, $id_objet);
-            /* …et aussi la liste des définitions des objets */
-            maj_meta('objets_persistants', $nom_meta, $objets);
 
         } else if ($forcer_maj) {
             /* Mise à jour forcée de l'objet persistant */
             if ($err = objet_modifier($type_objet, $id_objet, $objet)) {
                 return $err;
             }
-            maj_meta('objets_persistants', $nom_meta, $objets);
         }
 
         /* Gestion des objets enfants */
@@ -132,6 +129,10 @@ function maj_objets_persistants ($nom_meta, $objets, $forcer_maj=FALSE) {
                 return $err;
             }
         }
+        /* on enregistre la liste des définitions des objets. Il faut
+           le faire à la fin pour éviter que lors d'appels récursifs,
+           les enfants ne prennent le pas sur les parents */
+        maj_meta('objets_persistants', $nom_meta, $objets);
     }
 }
 
