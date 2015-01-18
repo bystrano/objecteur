@@ -52,14 +52,17 @@ maj_objets_persistants('mon_site_spip', array(
 function maj_objets_persistants ($nom_meta, $objets, $forcer_maj=FALSE) {
 
     include_spip('inc/config');
-    include_spip('base/abstract_sql');
     include_spip('action/editer_objet');
 
     foreach ($objets as $objet) {
 
         if ( ! objet_valide($objet)) {
-            spip_log("objet persistant mal défini : " . var_export($objet, TRUE), _LOG_ERREUR);
-            return "erreur : objet " . var_export($objet, TRUE) . " non valide";
+
+            spip_log("objet persistant mal défini : " .
+                     var_export($objet, TRUE), _LOG_ERREUR);
+
+            return "erreur : objet " . var_export($objet, TRUE) .
+                " non valide";
         }
 
         $type_objet = $objet['objet'];
@@ -67,47 +70,9 @@ function maj_objets_persistants ($nom_meta, $objets, $forcer_maj=FALSE) {
         $nom = $options['nom'];
         unset($options['nom']);
 
-
         if ( ! $id_objet = lire_config("$nom_meta/$nom")) {
 
-            /* S'il y a déjà un objet correspondant à la description
-               on le prend plutôt que d'en créer un nouveau */
-            $id_objet = sql_getfetsel(
-                id_table_objet($type_objet),
-                table_objet_sql($type_objet),
-                array_map(function ($index, $element) {
-                    return $index . '=' . sql_quote($element);
-                }, array_keys($options), $options));
-
-            /* Création d'un nouvel objet persistant */
-            if ( ! $id_objet) {
-
-                if (array_key_exists(id_parent_objet($type_objet), $options)) {
-
-                    $id_parent = $options[id_parent_objet($type_objet)];
-                    unset($options[id_parent_objet($type_objet)]);
-                }
-
-                if (isset($options['id_parent'])) {
-
-                    /* On remplace une éventuelle clé 'id_parent' par
-                       la clé le nom du champ id_parent du type
-                       d'objet en question */
-                    $id_parent = $options['id_parent'];
-                    unset($options['id_parent']);
-                }
-
-                if ($id_parent) {
-                    $id_objet = objet_inserer($type_objet, $id_parent);
-                } else {
-                    $id_objet = objet_inserer($type_objet);
-                }
-
-                if ($err = objet_modifier($type_objet, $id_objet, $options)) {
-                    return $err;
-                }
-            }
-
+            $id_objet = objet_persistant_creer($objet);
             /* On enregistre les identifiants de l'objet… */
             maj_meta($nom_meta, $nom, $id_objet);
 
@@ -137,22 +102,6 @@ function maj_objets_persistants ($nom_meta, $objets, $forcer_maj=FALSE) {
 }
 
 /**
- * Teste la validité d'un tableau représentant un objet
- *
- * @param array $objet : le tableau représentant l'objet
- *
- * @return bool : True si le tableau est valide, False sinon
- */
-function objet_valide ($objet) {
-
-    return (isset($objet['objet'])
-            AND table_objet_sql($objet['objet'])
-            AND isset($objet['options'])
-            AND isset($objet['options']['nom'])
-            AND $objet['options']['nom']);
-}
-
-/**
  * Effacer les objets persistant corrspondants à une méta donnée.
  *
  * @param String $nom_meta : Le nom de la méta.
@@ -170,7 +119,16 @@ function effacer_objets_persistants ($nom_meta) {
 
     foreach ($objets as $objet) {
 
-        if ($err = supprimer_objet_persistant($nom_meta, $objet)) {
+        if ( ! objet_valide($objet)) {
+
+            spip_log("objet persistant mal défini : "
+                     . var_export($objet, TRUE), _LOG_ERREUR);
+
+            return "erreur : objet " . var_export($objet, TRUE)
+                                     . " non valide";
+        }
+
+        if ($err = objet_persistant_supprimer($nom_meta, $objet)) {
             return $err;
         }
     }
@@ -180,19 +138,96 @@ function effacer_objets_persistants ($nom_meta) {
     effacer_meta($nom_meta);
 }
 
-function supprimer_objet_persistant ($nom_meta, $objet) {
+/**
+ * Teste la validité d'un tableau représentant un objet
+ *
+ * @param array $objet : le tableau représentant l'objet
+ *
+ * @return bool : True si le tableau est valide, False sinon
+ */
+function objet_valide ($objet) {
+
+    return (isset($objet['objet'])
+            AND table_objet_sql($objet['objet'])
+            AND isset($objet['options'])
+            AND isset($objet['options']['nom'])
+            AND $objet['options']['nom']);
+}
+
+/**
+ * Créer un nouvel objet persistant
+ *
+ * Si l'on trouve un objet qui correspond déjà à la description dans
+ * la base on ne crée rien mais retourne son identifiant.
+ *
+ * @param array $objet : Le tableau de définition de l'objet
+ *
+ * @return int : l'identifiant de l'objet créé
+ */
+function objet_persistant_creer ($objet) {
+
+    include_spip('base/abstract_sql');
+    include_spip('action/editer_objet');
+
+    $type_objet = $objet['objet'];
+    $options = $objet['options'];
+    $nom = $options['nom'];
+    unset($options['nom']);
+
+    /* S'il y a déjà un objet correspondant à la description
+       on le prend plutôt que d'en créer un nouveau */
+    $id_objet = sql_getfetsel(
+        id_table_objet($type_objet),
+        table_objet_sql($type_objet),
+        array_map(function ($index, $element) {
+            return $index . '=' . sql_quote($element);
+        }, array_keys($options), $options));
+
+    /* Création d'un nouvel objet persistant */
+    if ( ! $id_objet) {
+
+        if (array_key_exists(id_parent_objet($type_objet), $options)) {
+
+            $id_parent = $options[id_parent_objet($type_objet)];
+            unset($options[id_parent_objet($type_objet)]);
+        }
+
+        if (isset($options['id_parent'])) {
+
+            /* On remplace une éventuelle clé 'id_parent' par
+               la clé le nom du champ id_parent du type
+               d'objet en question */
+            $id_parent = $options['id_parent'];
+            unset($options['id_parent']);
+        }
+
+        if ($id_parent) {
+            $id_objet = objet_inserer($type_objet, $id_parent);
+        } else {
+            $id_objet = objet_inserer($type_objet);
+        }
+
+        objet_modifier($type_objet, $id_objet, $options);
+    }
+
+    return $id_objet;
+}
+
+/**
+ * Supprimer un objet persistant
+ *
+ * On supprime récursivement toute la descendance, en commencant par
+ * les plus jeunes
+ *
+ * @param String $nom_meta : Le nom de la méta correspondant à l'objet
+ * @param array $objet : Le tableau de définition de l'objet
+ *
+ * @return int : l'identifiant de l'objet créé
+ */
+function objet_persistant_supprimer ($nom_meta, $objet) {
 
     include_spip('inc/config');
     include_spip('base/abstract_sql');
-
-    if ( ! objet_valide($objet)) {
-
-        spip_log("objet persistant mal défini : "
-                 . var_export($objet, TRUE), _LOG_ERREUR);
-
-        return "erreur : objet " . var_export($objet, TRUE)
-                                 . " non valide";
-    }
 
     $type_objet = $objet['objet'];
     $options = $objet['options'];
@@ -203,7 +238,7 @@ function supprimer_objet_persistant ($nom_meta, $objet) {
     if (isset($objet['enfants']) AND $enfants = $objet['enfants']) {
 
         foreach ($enfants as $enfant) {
-            if ($err = supprimer_objet_persistant($nom_meta, $enfant)) {
+            if ($err = objet_persistant_supprimer($nom_meta, $enfant)) {
                 return $err;
             }
         }
