@@ -174,6 +174,14 @@ function objet_persistant_creer ($objet) {
     $nom = $options['nom'];
     unset($options['nom']);
 
+    /* On remplace une éventuelle clé 'id_parent' par la clé le nom du
+       champ id_parent du type d'objet en question */
+    if (isset($options['id_parent'])) {
+        $id_parent = $options['id_parent'];
+        unset($options['id_parent']);
+        $options[id_parent_objet($type_objet)] = $id_parent;
+    }
+
     /* S'il y a déjà un objet correspondant à la description
        on le prend plutôt que d'en créer un nouveau */
     $id_objet = sql_getfetsel(
@@ -183,23 +191,15 @@ function objet_persistant_creer ($objet) {
             return $index . '=' . sql_quote($element);
         }, array_keys($options), $options));
 
+
+    if (array_key_exists(id_parent_objet($type_objet), $options)) {
+
+        $id_parent = $options[id_parent_objet($type_objet)];
+        unset($options[id_parent_objet($type_objet)]);
+    }
+
     /* Création d'un nouvel objet persistant */
     if ( ! $id_objet) {
-
-        if (array_key_exists(id_parent_objet($type_objet), $options)) {
-
-            $id_parent = $options[id_parent_objet($type_objet)];
-            unset($options[id_parent_objet($type_objet)]);
-        }
-
-        if (isset($options['id_parent'])) {
-
-            /* On remplace une éventuelle clé 'id_parent' par
-               la clé le nom du champ id_parent du type
-               d'objet en question */
-            $id_parent = $options['id_parent'];
-            unset($options['id_parent']);
-        }
 
         if ($id_parent) {
             $id_objet = objet_inserer($type_objet, $id_parent);
