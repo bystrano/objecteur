@@ -174,6 +174,8 @@ function objet_persistant_creer ($objet) {
     $nom = $options['nom'];
     unset($options['nom']);
 
+    // var_dump($objet);
+
     /* On remplace une éventuelle clé 'id_parent' par la clé le nom du
        champ id_parent du type d'objet en question */
     if (isset($options['id_parent'])) {
@@ -181,6 +183,8 @@ function objet_persistant_creer ($objet) {
         unset($options['id_parent']);
         $options[id_parent_objet($type_objet)] = $id_parent;
     }
+
+    // var_dump($objet);
 
     /* S'il y a déjà un objet correspondant à la description
        on le prend plutôt que d'en créer un nouveau */
