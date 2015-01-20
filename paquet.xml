@@ -19,5 +19,6 @@
 
   <pipeline nom="autoriser" inclure="objets_persistants_autorisations.php" />
 
+  <utilise nom="gma" />
 
 </paquet>

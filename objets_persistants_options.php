@@ -27,3 +27,9 @@ $GLOBALS['id_parents_objets'] = array(
     'syndic'    => 'id_rubrique',
     'site'      => 'id_rubrique',
 );
+
+include_spip('objets_persistants_fonctions');
+
+if (plugin_est_actif('gma')) {
+    $GLOBALS['id_parents_objets']['groupe_mot'] = 'id_parent';
+}
