@@ -228,6 +228,7 @@ function objet_persistant_supprimer ($nom_meta, $objet) {
 
     include_spip('inc/config');
     include_spip('base/abstract_sql');
+    include_spip('inc/autoriser');
 
     $type_objet = $objet['objet'];
     $options = $objet['options'];
