@@ -65,7 +65,7 @@ function maj_objets_persistants ($nom_meta, $objets, $forcer_maj=FALSE) {
                 " non valide";
         }
 
-        $type_objet = $objet['objet'];
+        $type_objet = objet_type($objet['objet']);
         $options = $objet['options'];
         $nom = $options['nom'];
         unset($options['nom']);
@@ -169,7 +169,7 @@ function objet_persistant_creer ($objet) {
     include_spip('base/abstract_sql');
     include_spip('action/editer_objet');
 
-    $type_objet = $objet['objet'];
+    $type_objet = objet_type($objet['objet']);
     $options = $objet['options'];
     $nom = $options['nom'];
     unset($options['nom']);
