@@ -1,8 +1,8 @@
 Objecteur
 ==================
 
-_Objecteur_ est un plugin pour le CMS SPIP, il fournit une API pour gérer des objets éditoriaux nécessaires au bon fonctionnement du site.
-Il ne fait rien en soi, mais est conçu pour être utilisé par d'autres plugins.
+_Objecteur_ est un plugin pour le CMS SPIP, il fournit une API pour créer des objets éditoriaux en masse.
+Pour l'instant il ne fait rien en soi, mais est conçu pour être utilisé par d'autres plugins.
 
 Ce plugin répond à un besoin courant lors du développement de sites SPIP.
 On écrit des squelettes et du code php qui dépendent d'objets éditoriaux.

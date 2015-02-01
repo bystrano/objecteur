@@ -10,8 +10,57 @@
 
 if (!defined('_ECRIRE_INC_VERSION')) return;
 
+
 /**
  * Créer ou modifier des objets persistants
+ *
+ * Pour chacun des objets de la liste passée en paramètre, on cherche
+ * dans la base de données s'il existe déjà un objet correspondant à
+ * la description. S'il n'y a pas encore d'objet correspondant, on le
+ * crée. On retourne un tableaux des identifiants des objets, indexés
+ * par leurs noms. Si quelque chose s'est mal passé, on retourne un
+ * message d'erreur.
+ *
+ * @param array $objets : Un tableau de définitions d'objets.
+ *
+ * @return mixed : Un tableau d'identifiants indexés par nom d'objet,
+ *                 ou un message d'erreur si quelque chose s'est mal
+ *                 passé.
+ *
+ * @exemple :
+ *
+objecteur(array(
+    array(
+        'objet' => 'rubrique',
+        'options' => array(
+            'nom' => 'rubrique_hors_menu',
+            'titre' => "99. Hors-menu",
+        ),
+        'enfants' =>  array(
+            array(
+                'objet' => 'rubrique',
+                'options' => array(
+                    'nom' => 'rubrique_agenda',
+                    'titre' => 'Agenda',
+                ),
+            ),
+        ),
+    ),
+));
+
+-> array(
+    'rubrique_hors_menu' => 1,
+    'rubrique_agenda' => 2,
+)
+ *
+ */
+function objecteur ($nom_meta, $objets, $forcer_maj=FALSE) {
+
+    // TODO
+}
+
+/**
+ * DÉPRECIÉ - Créer ou modifier des objets persistants
  *
  * On prend les objets l'un après l'autre, et s'il y a déjà une méta
  * on ne fait rien. Sinon on cherche si un objet existant correspond à
