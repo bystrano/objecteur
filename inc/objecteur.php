@@ -29,7 +29,8 @@ if (!defined('_ECRIRE_INC_VERSION')) return;
  *
  * @exemple :
  *
-objecteur(array(
+$objecteur = charger_fonction('objecteur', 'inc');
+$objecteur(array(
     array(
         'objet' => 'rubrique',
         'options' => array(
@@ -100,11 +101,13 @@ function inc_objecteur_dist ($objets) {
 /**
  * Effacer des objets en masse
  *
- * On efface les objets qui correspondent aux définitions de la liste passée en paramètre
+ * On efface les objets qui correspondent aux définitions de la liste
+ * passée en paramètre
  *
  * @param array $objets : Une liste de définitions d'objets
  *
- * @return mixed : Un message d'erreur si quelque chose s'est mal passé, rien sinon
+ * @return mixed : Un message d'erreur si quelque chose s'est mal
+ *                 passé, rien sinon
  */
 function inc_objecteur_effacer_dist ($objets) {
 
@@ -205,8 +208,8 @@ function objecteur_creer_objet ($def_objet) {
     $nom = $options['nom'];
     unset($options['nom']);
 
-    /* On remplace une éventuelle clé 'id_parent' par la clé le nom du
-       champ id_parent du type d'objet en question */
+    /* On remplace une éventuelle clé 'id_parent' par une clé du nom
+       du champ id_parent du type d'objet en question. */
     if (isset($options['id_parent'])) {
         $id_parent = $options['id_parent'];
         unset($options['id_parent']);
@@ -215,7 +218,8 @@ function objecteur_creer_objet ($def_objet) {
 
     /* S'il y a déjà un objet correspondant à la description
        on le prend plutôt que d'en créer un nouveau */
-    $id_objet = objecteur_trouver(array('objet' => $type_objet, 'options' => $options));
+    $id_objet = objecteur_trouver(array('objet' => $type_objet,
+                                        'options' => $options));
 
     if (array_key_exists(id_parent_objet($type_objet), $options)) {
 
