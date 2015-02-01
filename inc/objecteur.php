@@ -56,7 +56,19 @@ objecteur(array(
  */
 function objecteur ($nom_meta, $objets, $forcer_maj=FALSE) {
 
-    // TODO
+    include_spip('action/editer_objet');
+
+    foreach ($objets as $objet) {
+
+        if ( ! definition_objet_valide($objet)) {
+
+            spip_log("objet persistant mal défini : " .
+                     var_export($objet, TRUE), _LOG_ERREUR);
+
+            return "erreur : objet " . var_export($objet, TRUE) .
+                " non valide";
+        }
+    }
 }
 
 /**
@@ -105,7 +117,7 @@ function maj_objecteur ($nom_meta, $objets, $forcer_maj=FALSE) {
 
     foreach ($objets as $objet) {
 
-        if ( ! objet_valide($objet)) {
+        if ( ! definition_objet_valide($objet)) {
 
             spip_log("objet persistant mal défini : " .
                      var_export($objet, TRUE), _LOG_ERREUR);
@@ -168,7 +180,7 @@ function effacer_objecteur ($nom_meta) {
 
     foreach ($objets as $objet) {
 
-        if ( ! objet_valide($objet)) {
+        if ( ! definition_objet_valide($objet)) {
 
             spip_log("objet persistant mal défini : "
                      . var_export($objet, TRUE), _LOG_ERREUR);
@@ -190,17 +202,20 @@ function effacer_objecteur ($nom_meta) {
 /**
  * Teste la validité d'un tableau représentant un objet
  *
- * @param array $objet : le tableau représentant l'objet
+ * @param array $def_objet : le tableau de définition de l'objet
  *
  * @return bool : True si le tableau est valide, False sinon
  */
-function objet_valide ($objet) {
+function definition_objet_valide ($def_objet) {
 
-    return (isset($objet['objet'])
-            AND table_objet_sql($objet['objet'])
-            AND isset($objet['options'])
-            AND isset($objet['options']['nom'])
-            AND $objet['options']['nom']);
+    // TODO vérifier que les champs définis correspondent bien à des
+    //      champs de la table de la BD
+
+    return (isset($def_objet['objet'])
+            AND table_objet_sql($def_objet['objet'])
+            AND isset($def_objet['options'])
+            AND isset($def_objet['options']['nom'])
+            AND $def_objet['options']['nom']);
 }
 
 /**
