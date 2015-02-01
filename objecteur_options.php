@@ -1,12 +1,12 @@
 <?php
 /**
- * Options du plugin Objets Persistants au chargement
+ * Options du plugin Objecteur au chargement
  *
- * @plugin     Objets Persistants
+ * @plugin     Objecteur
  * @copyright  2015
  * @author     Michel Bystranowski
  * @licence    GNU/GPL
- * @package    SPIP\Objets_persistants\Options
+ * @package    SPIP\Objecteur\Options
  */
 
 if (!defined('_ECRIRE_INC_VERSION')) return;
@@ -28,7 +28,7 @@ $GLOBALS['id_parents_objets'] = array(
     'site'      => 'id_rubrique',
 );
 
-include_spip('objets_persistants_fonctions');
+include_spip('objecteur_fonctions');
 
 if (plugin_est_actif('gma')) {
     $GLOBALS['id_parents_objets']['groupe_mots'] = 'id_parent';

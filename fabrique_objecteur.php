@@ -26,10 +26,10 @@ $data = array (
   ),
   'paquet' => 
   array (
-    'nom' => 'Objets Persistants',
+    'nom' => 'Objecteur',
     'slogan' => 'Gérer des objets éditoriaux persistants',
     'description' => 'Ce plugin fournit une API pour gérer des objets éditoriaux qui sont liés à des fonctionnalités du site. Ces objets sont nécessaires au fonctionnement du site, il faut donc être webmestre pour les supprimer.',
-    'prefixe' => 'objets_persistants',
+    'prefixe' => 'objecteur',
     'version' => '0.0.1',
     'auteur' => 'Michel Bystranowski',
     'auteur_lien' => '',

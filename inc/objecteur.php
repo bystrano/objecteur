@@ -1,8 +1,8 @@
 <?php
 /**
- * API du plugin Objets Persistants
+ * API du plugin Objecteur
  *
- * @plugin     objets_persistants
+ * @plugin     objecteur
  * @copyright  2014
  * @author     Michel Bystranowski
  * @licence    GNU/GPL
@@ -27,7 +27,7 @@ if (!defined('_ECRIRE_INC_VERSION')) return;
  *
  * @exemple :
  *
-maj_objets_persistants('mon_site_spip', array(
+maj_objecteur('mon_site_spip', array(
     array(
         'objet' => 'rubrique',
         'options' => array(
@@ -49,7 +49,7 @@ maj_objets_persistants('mon_site_spip', array(
  * @return mixed : Un message d'erreur si quelque chose s'est mal
  *                 passé, rien sinon.
  */
-function maj_objets_persistants ($nom_meta, $objets, $forcer_maj=FALSE) {
+function maj_objecteur ($nom_meta, $objets, $forcer_maj=FALSE) {
 
     include_spip('inc/config');
     include_spip('action/editer_objet');
@@ -90,14 +90,14 @@ function maj_objets_persistants ($nom_meta, $objets, $forcer_maj=FALSE) {
                 $enfants[$i]['options']['id_parent'] = $id_objet;
             }
 
-            if ($err = maj_objets_persistants($nom_meta, $enfants, $forcer_maj)) {
+            if ($err = maj_objecteur($nom_meta, $enfants, $forcer_maj)) {
                 return $err;
             }
         }
         /* on enregistre la liste des définitions des objets. Il faut
            le faire à la fin pour éviter que lors d'appels récursifs,
            les enfants ne prennent le pas sur les parents */
-        maj_meta('objets_persistants', $nom_meta, $objets);
+        maj_meta('objecteur', $nom_meta, $objets);
     }
 }
 
@@ -109,11 +109,11 @@ function maj_objets_persistants ($nom_meta, $objets, $forcer_maj=FALSE) {
  * @return mixed : Un message d'erreur si quelque chose s'est mal
  *                 passé, rien sinon.
  */
-function effacer_objets_persistants ($nom_meta) {
+function effacer_objecteur ($nom_meta) {
 
     include_spip('inc/config');
 
-    $objets = lire_config("objets_persistants/$nom_meta");
+    $objets = lire_config("objecteur/$nom_meta");
 
     if ( ! $objets) { return; }
 
@@ -133,8 +133,8 @@ function effacer_objets_persistants ($nom_meta) {
         }
     }
 
-    /* supprimer la clé dans la méta 'objets_persistants' */
-    maj_meta('objets_persistants', $nom_meta);
+    /* supprimer la clé dans la méta 'objecteur' */
+    maj_meta('objecteur', $nom_meta);
     effacer_meta($nom_meta);
 }
 

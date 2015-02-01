@@ -1,7 +1,7 @@
-Objets Persistants
+Objecteur
 ==================
 
-_Objets Persistants_ est un plugin pour le CMS SPIP, il fournit une API pour gérer des objets éditoriaux nécessaires au bon fonctionnement du site.
+_Objecteur_ est un plugin pour le CMS SPIP, il fournit une API pour gérer des objets éditoriaux nécessaires au bon fonctionnement du site.
 Il ne fait rien en soi, mais est conçu pour être utilisé par d'autres plugins.
 
 Ce plugin répond à un besoin courant lors du développement de sites SPIP.
@@ -19,15 +19,15 @@ Il peut aussi arriver que des utilisateurs du site suppriment des objets éditor
 Créer des objets persistants
 ----------------------------
 
-On peut créer des objets persistants avec la fonction `maj_objets_persistants` qui se trouve dans le fichier `inc/objets_persistants.php`.
+On peut créer des objets persistants avec la fonction `maj_objecteur` qui se trouve dans le fichier `inc/objecteur.php`.
 Cette fonction reçoit deux paramètres, `$nom_meta`, qui est le nom de la meta qui sera utilisée pour enregistrer les identifiants, et `$objets`, qui est un tableau qui définit les objets éditoriaux persistants.
 
 On peut par exemple créer une rubrique hors-menu qui contient une rubrique agenda de la façon suivante :
 
 ```php
-include_spip('inc/objets_persistants');
+include_spip('inc/objecteur');
 
-maj_objets_persistants('mon_site_spip', array(
+maj_objecteur('mon_site_spip', array(
     array(
         'objet' => 'rubrique',
         'options' => array(
@@ -48,7 +48,7 @@ maj_objets_persistants('mon_site_spip', array(
 ```
 
 Au premier appel de la fonction, les objets seront créés, et leurs identifants seront enregistrés dans la méta qu'on à passé en paramètre.
-Si les objets existent déjà, l'appel à cette fonction n'aura aucun effet, on peut donc mettre ce code dans `mes_options.php`, mais la meilleure solution est d'appeler `maj_objets_persistants` dans les fonctions d'administration d'un plugin.
+Si les objets existent déjà, l'appel à cette fonction n'aura aucun effet, on peut donc mettre ce code dans `mes_options.php`, mais la meilleure solution est d'appeler `maj_objecteur` dans les fonctions d'administration d'un plugin.
 
 On pourra alors retouver les identifiants de ces objets dans du code php
 

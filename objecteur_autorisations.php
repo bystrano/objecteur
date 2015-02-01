@@ -1,12 +1,12 @@
 <?php
 /**
- * Définit les autorisations du plugin Objets Persistants
+ * Définit les autorisations du plugin Objecteur
  *
- * @plugin     Objets Persistants
+ * @plugin     Objecteur
  * @copyright  2015
  * @author     Michel Bystranowski
  * @licence    GNU/GPL
- * @package    SPIP\Objets_persistants\Autorisations
+ * @package    SPIP\Objecteur\Autorisations
  */
 
 if (!defined('_ECRIRE_INC_VERSION')) return;
@@ -15,4 +15,4 @@ if (!defined('_ECRIRE_INC_VERSION')) return;
 /**
  * Fonction d'appel pour le pipeline
  * @pipeline autoriser */
-function objets_persistants_autoriser(){}
+function objecteur_autoriser(){}

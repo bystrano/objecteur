@@ -1,7 +1,7 @@
 <paquet
-  prefix="objets_persistants"
+  prefix="objecteur"
   categorie="outil"
-  version="0.0.1"
+  version="0.0.2"
   etat="dev"
   compatibilite="[3.0.17;3.0.*]"
   logo=""
@@ -11,13 +11,13 @@
     Paquet genere le 2015-01-16 19:22:52
   -->
 
-  <nom>Objets Persistants</nom>
+  <nom>Objecteur</nom>
 
   <auteur>Michel Bystranowski</auteur>
 
   <licence>GNU/GPL</licence>
 
-  <pipeline nom="autoriser" inclure="objets_persistants_autorisations.php" />
+  <pipeline nom="autoriser" inclure="objecteur_autorisations.php" />
 
   <utilise nom="gma" />
 

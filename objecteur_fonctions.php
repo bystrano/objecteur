@@ -1,12 +1,12 @@
 <?php
 /**
- * Fonctions utiles au plugin Objets Persistants
+ * Fonctions utiles au plugin Objecteur
  *
- * @plugin     Objets Persistants
+ * @plugin     Objecteur
  * @copyright  2015
  * @author     Michel Bystranowski
  * @licence    GNU/GPL
- * @package    SPIP\Objets_persistants\Fonctions
+ * @package    SPIP\Objecteur\Fonctions
  */
 
 if (!defined('_ECRIRE_INC_VERSION')) return;
