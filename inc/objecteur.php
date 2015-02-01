@@ -12,7 +12,7 @@ if (!defined('_ECRIRE_INC_VERSION')) return;
 
 
 /**
- * Créer ou modifier des objets persistants
+ * Créer ou retrouver des objets
  *
  * Pour chacun des objets de la liste passée en paramètre, on cherche
  * dans la base de données s'il existe déjà un objet correspondant à
@@ -54,66 +54,11 @@ objecteur(array(
 )
  *
  */
-function objecteur ($nom_meta, $objets, $forcer_maj=FALSE) {
+function inc_objecteur_dist ($objets) {
 
     include_spip('action/editer_objet');
 
-    foreach ($objets as $objet) {
-
-        if ( ! definition_objet_valide($objet)) {
-
-            spip_log("objet persistant mal défini : " .
-                     var_export($objet, TRUE), _LOG_ERREUR);
-
-            return "erreur : objet " . var_export($objet, TRUE) .
-                " non valide";
-        }
-    }
-}
-
-/**
- * DÉPRECIÉ - Créer ou modifier des objets persistants
- *
- * On prend les objets l'un après l'autre, et s'il y a déjà une méta
- * on ne fait rien. Sinon on cherche si un objet existant correspond à
- * la description, et si on ne trouve vraiment rien on crée un nouvel
- * objet persistant.
- *
- * @param String $nom_meta : Le nom de la meta dans laquelle seront
- *                           stocké les objets persistants
- * @param array $objets : Un tableau de définitions d'objets.
- * @param bool $forcer_maj : permet de forcer une mise à jour de
- *                           l'objet même s'il existe déjà dans les
- *                           métas.
- *
- * @exemple :
- *
-maj_objecteur('mon_site_spip', array(
-    array(
-        'objet' => 'rubrique',
-        'options' => array(
-            'nom' => 'rubrique_hors_menu',
-            'titre' => "99. Hors-menu",
-        ),
-        'enfants' =>  array(
-            array(
-                'objet' => 'rubrique',
-                'options' => array(
-                    'nom' => 'rubrique_agenda',
-                    'titre' => 'Agenda',
-                ),
-            ),
-        ),
-    ),
-));
- *
- * @return mixed : Un message d'erreur si quelque chose s'est mal
- *                 passé, rien sinon.
- */
-function maj_objecteur ($nom_meta, $objets, $forcer_maj=FALSE) {
-
-    include_spip('inc/config');
-    include_spip('action/editer_objet');
+    $ids_objets = array();
 
     foreach ($objets as $objet) {
 
@@ -126,23 +71,8 @@ function maj_objecteur ($nom_meta, $objets, $forcer_maj=FALSE) {
                 " non valide";
         }
 
-        $type_objet = objet_type($objet['objet']);
-        $options = $objet['options'];
-        $nom = $options['nom'];
-        unset($options['nom']);
-
-        if ( ! $id_objet = lire_config("$nom_meta/$nom")) {
-
-            $id_objet = objet_persistant_creer($objet);
-            /* On enregistre les identifiants de l'objet… */
-            maj_meta($nom_meta, $nom, $id_objet);
-
-        } else if ($forcer_maj) {
-            /* Mise à jour forcée de l'objet persistant */
-            if ($err = objet_modifier($type_objet, $id_objet, $options)) {
-                return $err;
-            }
-        }
+        $id_objet = objecteur_creer_objet($objet);
+        $ids_objets[$objet['options']['nom']] = $id_objet;
 
         /* Gestion des objets enfants */
         if (isset($objet['enfants']) AND $enfants = $objet['enfants']) {
@@ -151,32 +81,34 @@ function maj_objecteur ($nom_meta, $objets, $forcer_maj=FALSE) {
                 $enfants[$i]['options']['id_parent'] = $id_objet;
             }
 
-            if ($err = maj_objecteur($nom_meta, $enfants, $forcer_maj)) {
-                return $err;
+            $objecteur = charger_fonction('objecteur', 'inc');
+
+            $ids_enfants = $objecteur($enfants);
+
+            /* On a reçu un string, c'est qu'il y a eu une erreur */
+            if (is_string($ids_enfants)) {
+                return $ids_enfants;
+            } else {
+                $ids_objets = array_merge($ids_objets, $ids_enfants);
             }
         }
-        /* on enregistre la liste des définitions des objets. Il faut
-           le faire à la fin pour éviter que lors d'appels récursifs,
-           les enfants ne prennent le pas sur les parents */
-        maj_meta('objecteur', $nom_meta, $objets);
     }
+
+    return $ids_objets;
 }
 
 /**
- * Effacer les objets persistant corrspondants à une méta donnée.
+ * Effacer des objets en masse
  *
- * @param String $nom_meta : Le nom de la méta.
+ * On efface les objets qui correspondent aux définitions de la liste passée en paramètre
  *
- * @return mixed : Un message d'erreur si quelque chose s'est mal
- *                 passé, rien sinon.
+ * @param array $objets : Une liste de définitions d'objets
+ *
+ * @return mixed : Un message d'erreur si quelque chose s'est mal passé, rien sinon
  */
-function effacer_objecteur ($nom_meta) {
+function inc_objecteur_effacer_dist ($objets) {
 
-    include_spip('inc/config');
-
-    $objets = lire_config("objecteur/$nom_meta");
-
-    if ( ! $objets) { return; }
+    include_spip('inc/autoriser');
 
     foreach ($objets as $objet) {
 
@@ -189,14 +121,47 @@ function effacer_objecteur ($nom_meta) {
                                      . " non valide";
         }
 
-        if ($err = objet_persistant_supprimer($nom_meta, $objet)) {
-            return $err;
+        /* On commence par supprimer les enfants */
+        if (isset($objet['enfants']) AND $enfants = $objet['enfants']) {
+
+            $objecteur_effacer = charger_fonction('objecteur_effacer', 'inc');
+            if ($err = $objecteur_effacer($enfants)) {
+                return $err;
+            }
+        }
+
+        $id_objet = objecteur_trouver($objet);
+
+        if ($id_objet) {
+            if (autoriser('supprimer', $objet['objet'], $id_objet)) {
+                sql_delete(table_objet_sql($objet['objet']),
+                           id_table_objet($objet['objet']) . '=' . intval($id_objet));
+            } else {
+                return "supprimer " . $objet['objet'] . " $id_objet : action non autorisée";
+            }
         }
     }
+}
 
-    /* supprimer la clé dans la méta 'objecteur' */
-    maj_meta('objecteur', $nom_meta);
-    effacer_meta($nom_meta);
+/**
+ * Trouver un objet éditorial correspondant à une définition
+ *
+ * @param array $def_objet : Une définition d'objet éditorial
+ *
+ * @return int : L'identifiant de l'objet trouvé
+ */
+function objecteur_trouver ($def_objet) {
+
+    if (isset($def_objet['options']['nom'])) {
+        unset($def_objet['options']['nom']);
+    }
+
+    return intval(sql_getfetsel(
+        id_table_objet($def_objet['objet']),
+        table_objet_sql($def_objet['objet']),
+        array_map(function ($index, $element) {
+            return $index . '=' . sql_quote($element);
+        }, array_keys($def_objet['options']), $def_objet['options'])));
 }
 
 /**
@@ -219,22 +184,22 @@ function definition_objet_valide ($def_objet) {
 }
 
 /**
- * Créer un nouvel objet persistant
+ * Créer un nouvel objet
  *
  * Si l'on trouve un objet qui correspond déjà à la description dans
  * la base on ne crée rien mais retourne son identifiant.
  *
- * @param array $objet : Le tableau de définition de l'objet
+ * @param array $def_objet : Le tableau de définition de l'objet
  *
- * @return int : l'identifiant de l'objet créé
+ * @return int : l'identifiant de l'objet
  */
-function objet_persistant_creer ($objet) {
+function objecteur_creer_objet ($def_objet) {
 
     include_spip('base/abstract_sql');
     include_spip('action/editer_objet');
 
-    $type_objet = objet_type($objet['objet']);
-    $options = $objet['options'];
+    $type_objet = objet_type($def_objet['objet']);
+    $options = $def_objet['options'];
     $nom = $options['nom'];
     unset($options['nom']);
 
@@ -248,13 +213,7 @@ function objet_persistant_creer ($objet) {
 
     /* S'il y a déjà un objet correspondant à la description
        on le prend plutôt que d'en créer un nouveau */
-    $id_objet = sql_getfetsel(
-        id_table_objet($type_objet),
-        table_objet_sql($type_objet),
-        array_map(function ($index, $element) {
-            return $index . '=' . sql_quote($element);
-        }, array_keys($options), $options));
-
+    $id_objet = objecteur_trouver(array('objet' => $type_objet, 'options' => $options));
 
     if (array_key_exists(id_parent_objet($type_objet), $options)) {
 
@@ -272,7 +231,7 @@ function objet_persistant_creer ($objet) {
         sql_updateq('spip_groupes_mots', $options, "id_groupe=$id_objet");
     }
 
-    /* Création d'un nouvel objet persistant */
+    /* Création d'un nouvel objet */
     if ( ! $id_objet) {
 
         if ($id_parent) {
@@ -285,48 +244,6 @@ function objet_persistant_creer ($objet) {
     }
 
     return $id_objet;
-}
-
-/**
- * Supprimer un objet persistant
- *
- * On supprime récursivement toute la descendance, en commencant par
- * les plus jeunes
- *
- * @param String $nom_meta : Le nom de la méta correspondant à l'objet
- * @param array $objet : Le tableau de définition de l'objet
- *
- * @return int : l'identifiant de l'objet créé
- */
-function objet_persistant_supprimer ($nom_meta, $objet) {
-
-    include_spip('inc/config');
-    include_spip('base/abstract_sql');
-    include_spip('inc/autoriser');
-
-    $type_objet = $objet['objet'];
-    $options = $objet['options'];
-    $nom = $options['nom'];
-    unset($options['nom']);
-
-    /* Gestion des objets enfants */
-    if (isset($objet['enfants']) AND $enfants = $objet['enfants']) {
-
-        foreach ($enfants as $enfant) {
-            if ($err = objet_persistant_supprimer($nom_meta, $enfant)) {
-                return $err;
-            }
-        }
-    }
-
-    $id_objet = lire_config("$nom_meta/$nom");
-
-    if (autoriser('supprimer', $type_objet, $id_objet)) {
-        sql_delete(table_objet_sql($type_objet),
-                   id_table_objet($type_objet) . '=' . intval($id_objet));
-    } else {
-        return "supprimer $type_objet $id_objet : action non autorisée";
-    }
 }
 
 /**
