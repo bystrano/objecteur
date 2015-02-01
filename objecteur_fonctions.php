@@ -22,7 +22,9 @@ if (!defined('_ECRIRE_INC_VERSION')) return;
 function plugin_est_actif ($prefix_plugin) {
 
     include_spip('inc/plugin');
-    return array_key_exists($prefixe_plugin, liste_chemin_plugin_actifs());
+
+    return array_key_exists(strtoupper($prefix_plugin),
+                            liste_chemin_plugin_actifs());
 }
 
 /**
