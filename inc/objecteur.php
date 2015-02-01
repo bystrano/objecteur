@@ -85,7 +85,7 @@ function inc_objecteur_dist ($objets) {
 
             $ids_enfants = $objecteur($enfants);
 
-            /* On a reçu un string, c'est qu'il y a eu une erreur */
+            /* Si on a reçu un string, c'est qu'il y a eu une erreur */
             if (is_string($ids_enfants)) {
                 return $ids_enfants;
             } else {
@@ -108,6 +108,7 @@ function inc_objecteur_dist ($objets) {
  */
 function inc_objecteur_effacer_dist ($objets) {
 
+    include_spip('base/abstract_sql');
     include_spip('inc/autoriser');
 
     foreach ($objets as $objet) {
@@ -197,6 +198,7 @@ function objecteur_creer_objet ($def_objet) {
 
     include_spip('base/abstract_sql');
     include_spip('action/editer_objet');
+    include_spip('objecteur_fonctions');
 
     $type_objet = objet_type($def_objet['objet']);
     $options = $def_objet['options'];
@@ -244,55 +246,4 @@ function objecteur_creer_objet ($def_objet) {
     }
 
     return $id_objet;
-}
-
-/**
- * Mettre à jour une meta en tant que tableau
- *
- * On s'en sert pour mettre plein de choses dans une même meta, de
- * façon à ne pas trop polluer la DB. Si on omet le paramètre $valeur,
- * la clé est retirée de la méta
- *
- * @param string
- *     Le nom de la meta
- * @param mixed
- *     La clé à mettre à jour
- * @param mixed
- *     La valeur de la meta
- */
-function maj_meta ($nom_meta, $cle, $valeur=NULL) {
-
-    include_spip('inc/meta');
-
-    $config = lire_config($nom_meta);
-    $config = $config ? $config : array();
-
-    if (is_null($valeur)) {
-        if (isset($config[$cle])) { unset($config[$cle]); }
-    } else {
-        $config[$cle] = $valeur;
-    }
-
-    ecrire_meta($nom_meta, serialize($config));
-}
-
-/**
- * Retrouve la clé d'objet parent à partir du nom d'objet
- *
- * - article -> id_rubrique
- * - mot     -> id_groupe
- *
- * @api
- * @param string $type    : Nom de l'objet
- * @param string $serveur : Nom du connecteur
- *
- * @return string : Nom de la clé primaire
-**/
-function id_parent_objet ($type) {
-
-    if (isset($GLOBALS['id_parents_objets'][$type])) {
-        return $GLOBALS['id_parents_objets'][$type];
-    } else {
-        return '';
-    }
 }
