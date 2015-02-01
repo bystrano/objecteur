@@ -247,3 +247,27 @@ function objecteur_creer_objet ($def_objet) {
 
     return $id_objet;
 }
+
+/**
+ * DÉPRÉCIÉ - Crée des objets éditoriaux et enregistre leurs id dans de métas
+ *
+ * @param String $nom_meta : Le nom de la meta dans laquelle seront
+ *                           stocké les objets persistants
+ * @param array $objets : Un tableau de définitions d'objets.
+ *
+ * @return mixed : Un message d'erreur si quelque chose s'est mal
+ *                 passé, rien sinon.
+ */
+function maj_objets_persistants ($nom_meta, $objets) {
+
+    include_spip('inc/meta');
+    include_spip('objecteur_fonctions');
+
+    if ( ! $ids_objets = lire_config($nom_meta)) {
+        $objecteur = charger_fonction('objecteur', 'inc');
+        $ids_objets = $objecteur($objets);
+    }
+
+    ecrire_meta($nom_meta, serialize($ids_objets));
+    maj_meta('objets_persistants', $nom_meta, $ids_objets);
+}
