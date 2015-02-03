@@ -1,33 +1,23 @@
 Objecteur
-==================
+=========
 
 _Objecteur_ est un plugin pour le CMS SPIP, il fournit une API pour créer des objets éditoriaux en masse.
 Pour l'instant il ne fait rien en soi, mais est conçu pour être utilisé par d'autres plugins.
 
-Ce plugin répond à un besoin courant lors du développement de sites SPIP.
-On écrit des squelettes et du code php qui dépendent d'objets éditoriaux.
-Ça peut être une rubrique "Hors-menu", ou un groupe de mots-clés qui caractérise un objet éditorial.
-On a alors tendance à créer l'objet dans l'espace privé de SPIP, puis à utiliser son `id` dans le code, ce qui pose plusieurs problèmes.
+La fonction `objecteur`
+-----------------------
 
-Le code devient dépendant de la base de données, et ça complique le développement.
-On ne peux pas repartir de zéro sans recréer ces objets à la main et mettre à jour les identifiants dans le code.
-Ce plugin fournit des fonctions pour créer et `TODO`supprimer ces objets dans les fonctions d'administration des plugins et retrouver ensuite leurs identifiants dans du code php ou des squelettes.
-
-Il peut aussi arriver que des utilisateurs du site suppriment des objets éditoriaux nécessaires au fonctionnement du site.
-`TODO` Pour éviter ce genre de problèmes, on interdit aux non-webmestres de supprimer les objets éditoriaux persistants créés via l'API.
-
-Créer des objets persistants
-----------------------------
-
-On peut créer des objets persistants avec la fonction `maj_objets_persistants` qui se trouve dans le fichier `inc/objecteur.php`.
-Cette fonction reçoit deux paramètres, `$nom_meta`, qui est le nom de la meta qui sera utilisée pour enregistrer les identifiants, et `$objets`, qui est un tableau qui définit les objets éditoriaux persistants.
-
-On peut par exemple créer une rubrique hors-menu qui contient une rubrique agenda de la façon suivante :
+La fonction `objecteur` sert à créer des objets éditoriaux.
+On charge la fonction via le mécanisme habituel de SPIP :
 
 ```php
-include_spip('inc/objecteur');
+$objecteur = charger_fonction('objecteur', 'inc');
+```
 
-maj_objets_persistants('mon_site_spip', array(
+Et on lui passe en paramètre une liste de définitions d'objets :
+
+```php
+$objecteur(array(
     array(
         'objet' => 'rubrique',
         'options' => array(
@@ -44,24 +34,46 @@ maj_objets_persistants('mon_site_spip', array(
             ),
         ),
     ),
+    array(
+        'objet' => 'mot',
+        'options' => array(
+            'titre' => 'humeur',
+        ),
+    ),
 ));
 ```
 
-Au premier appel de la fonction, les objets seront créés, et leurs identifants seront enregistrés dans la méta qu'on à passé en paramètre.
-Si les objets existent déjà, l'appel à cette fonction n'aura aucun effet, on peut donc mettre ce code dans `mes_options.php`, mais la meilleure solution est d'appeler `maj_objets_persistants` dans les fonctions d'administration d'un plugin.
-
-On pourra alors retouver les identifiants de ces objets dans du code php
+S'il y a déjà des objets éditoriaux qui correspondent aux définitions, on ne crée pas de nouveaux objets.
+Dans tous les cas, la fonction retourne un tableau d'identifiants des objets en question, indexés par leurs noms.
+On ne retourne pas les identifiants des objets qui n'ont pas définis d'option `nom`.
+Sur un SPIP fraîchement installé, l'exemple ci-dessus retournerait donc :
 
 ```php
-include_spip('inc/config');
-
-$id_rub_hors_menu = lire_config('mon_site_spip/rubrique_hors_menu');
+array(
+    'rubrique_hors_menu' => 1,
+    'rubrique_agenda' => 2,
+)
 ```
 
-ou dans des squelettes :
+Au premier appel, la fonction crée les objets, puis elle ne fait que retourner les identifiants.
+Si quelque chose s'est mal passé, ou que le tableau d'objets passé en paramètre est mal définit, la fonction retourne un message d'erreur.
 
+`objecteur_effacer`
+-------------------
+
+La fonction `objecteur_effacer` sert à supprimer des objets éditoriaux.
+On l'utilise comme la fonction `objecteur` :
+
+```php
+$objecteur_effacer = charger_fonction('objecteur_effacer', 'inc');
+$objecteur_effacer(array(
+    array(
+        'objet' => 'mot',
+        'options' => array(
+            'titre' => 'humeur',
+        ),
+    ),
+));
 ```
-<BOUCLE_rub_agenda(RUBRIQUES){id_rubrique=#CONFIG{mon_site_spip/rubrique_agenda}}>
-  #TITRE
-</BOUCLE_rub_agenda>
-```
+
+La fonction se charge alors de supprimer les objets éditoriaux qui correspondent aux définitions passées en paramètre.

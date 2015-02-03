@@ -48,6 +48,12 @@ $objecteur(array(
             ),
         ),
     ),
+    array(
+        'objet' => 'mot',
+        'options' => array(
+            'titre' => 'humeur',
+        ),
+    ),
 ));
 
 -> array(
