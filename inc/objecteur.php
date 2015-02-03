@@ -156,6 +156,8 @@ function inc_objecteur_effacer_dist ($objets) {
  */
 function objecteur_trouver ($def_objet) {
 
+    include_spip('base/abstract_sql');
+
     if (isset($def_objet['options']['nom'])) {
         unset($def_objet['options']['nom']);
     }
@@ -227,18 +229,19 @@ function objecteur_creer_objet ($def_objet) {
         unset($options[id_parent_objet($type_objet)]);
     }
 
-    /* On fait une exception pour que ça fonctionne avec le plugin
-       gma, mais à terme il faudrait plutôt implémenter l'api
-       objet_inserer pour les groupes de mot-clés avec parents */
-    if (($type_objet == 'groupe_mots') AND $id_parent) {
-        $options['id_parent'] = $id_parent;
-        unset($id_parent);
-        $id_objet = objet_inserer('groupe_mots');
-        sql_updateq('spip_groupes_mots', $options, "id_groupe=$id_objet");
-    }
-
     /* Création d'un nouvel objet */
     if ( ! $id_objet) {
+
+        /* On fait une exception pour que ça fonctionne avec le plugin
+           gma, mais à terme il faudrait plutôt implémenter l'api
+           objet_inserer pour les groupes de mot-clés avec parents */
+        if (($type_objet == 'groupe_mots') AND $id_parent) {
+            $options['id_parent'] = $id_parent;
+            unset($id_parent);
+            $id_objet = objet_inserer('groupe_mots');
+            sql_updateq('spip_groupes_mots', $options, "id_groupe=$id_objet");
+            return $id_objet;
+        }
 
         if ($id_parent) {
             $id_objet = objet_inserer($type_objet, $id_parent);
