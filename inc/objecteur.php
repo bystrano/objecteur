@@ -205,6 +205,22 @@ function objecteur_valider_definition ($def_objet) {
             "\n$string_objet";
     }
 
+    include_spip('base/abstract_sql');
+
+    $desc_table = description_table(table_objet_sql($type_objet));
+    $champs_table = array_keys($desc_table['field']);
+
+    foreach ($options as $cle => $valeur) {
+        /* Les options peuvent être 'nom', 'id_parent', ou un champ de
+           la table du type d'objet en question */
+        if (($cle !== 'nom')
+            AND ($cle !== 'id_parent')
+            AND ( ! in_array($cle, $champs_table))) {
+            return "$cle n'est pas une option valide" .
+                "\n$string_objet";
+        }
+    }
+
     /* Si l'objet est valide, on teste récursivement les enfants */
     $enfants = isset($def_objet['enfants']) ? $def_objet['enfants'] : array();
 
