@@ -18,8 +18,9 @@ if (!defined('_ECRIRE_INC_VERSION')) return;
  * dans la base de données s'il existe déjà un objet correspondant à
  * la description. S'il n'y a pas encore d'objet correspondant, on le
  * crée. On retourne un tableaux des identifiants des objets, indexés
- * par leurs noms. Si quelque chose s'est mal passé, on retourne un
- * message d'erreur.
+ * par leurs noms. Les identifiants des objets qui n'ont pas d'option
+ * 'nom' définie ne sont pas retournés. Si quelque chose s'est mal
+ * passé, on retourne un message d'erreur.
  *
  * @param array $objets : Un tableau de définitions d'objets.
  *
@@ -71,7 +72,10 @@ function inc_objecteur_dist ($objets) {
         }
 
         $id_objet = objecteur_creer_objet($objet);
-        $ids_objets[$objet['options']['nom']] = $id_objet;
+
+        if (isset($objet['options']['nom'])) {
+            $ids_objets[$objet['options']['nom']] = $id_objet;
+        }
 
         /* Gestion des objets enfants */
         if (isset($objet['enfants']) AND $enfants = $objet['enfants']) {
@@ -200,11 +204,6 @@ function objecteur_valider_definition ($def_objet) {
             "\n$string_objet";
     }
 
-    if (( ! isset($options['nom'])) OR ( ! trim($options['nom']))) {
-        return "L'option 'nom' de l'objet n'est pas définie" .
-            "\n$string_objet";
-    }
-
     include_spip('base/abstract_sql');
 
     $desc_table = description_table(table_objet_sql($type_objet));
@@ -249,8 +248,8 @@ function objecteur_creer_objet ($def_objet) {
 
     $type_objet = objet_type($def_objet['objet']);
     $options = $def_objet['options'];
-    $nom = $options['nom'];
-    unset($options['nom']);
+
+    if (isset($options['nom'])) unset($options['nom']);
 
     /* On remplace une éventuelle clé 'id_parent' par une clé du nom
        du champ id_parent du type d'objet en question. */
