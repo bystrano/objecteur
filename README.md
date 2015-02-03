@@ -58,6 +58,22 @@ array(
 Au premier appel, la fonction crée les objets, puis elle ne fait que retourner les identifiants.
 Si quelque chose s'est mal passé, ou que le tableau d'objets passé en paramètre est mal définit, la fonction retourne un message d'erreur.
 
+Un deuxième paramètre permet de forcer la création de nouveaux objets, même s'il en existe déjà de similaires dans la base de données :
+
+```php
+$objecteur(array(
+               array(
+                   'objet' => 'article',
+                   'options' => array(
+                       'titre' => 'nouvel article',
+                   ),
+               ),
+           ),
+           TRUE);
+```
+
+Ainsi, chaque appel créera un nouvel article.
+
 `objecteur_effacer`
 -------------------
 

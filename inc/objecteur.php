@@ -62,7 +62,7 @@ $objecteur(array(
 )
  *
  */
-function inc_objecteur_dist ($objets) {
+function inc_objecteur_dist ($objets, $forcer_creation=FALSE) {
 
     include_spip('action/editer_objet');
 
@@ -77,7 +77,7 @@ function inc_objecteur_dist ($objets) {
             return "définition de l'objet invalide : $err";
         }
 
-        $id_objet = objecteur_creer_objet($objet);
+        $id_objet = objecteur_creer_objet($objet, $forcer_creation);
 
         if (isset($objet['options']['nom'])) {
             $ids_objets[$objet['options']['nom']] = $id_objet;
@@ -246,7 +246,7 @@ function objecteur_valider_definition ($def_objet) {
  *
  * @return int : l'identifiant de l'objet
  */
-function objecteur_creer_objet ($def_objet) {
+function objecteur_creer_objet ($def_objet, $forcer_creation) {
 
     include_spip('base/abstract_sql');
     include_spip('action/editer_objet');
@@ -267,8 +267,10 @@ function objecteur_creer_objet ($def_objet) {
 
     /* S'il y a déjà un objet correspondant à la description
        on le prend plutôt que d'en créer un nouveau */
-    $id_objet = objecteur_trouver(array('objet' => $type_objet,
-                                        'options' => $options));
+    if ( ! $forcer_creation) {
+        $id_objet = objecteur_trouver(array('objet' => $type_objet,
+                                            'options' => $options));
+    }
 
     if (array_key_exists(id_parent_objet($type_objet), $options)) {
 
