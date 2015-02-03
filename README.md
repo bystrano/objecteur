@@ -45,11 +45,12 @@ $objecteur(array(
 
 S'il y a déjà des objets éditoriaux qui correspondent aux définitions, on ne crée pas de nouveaux objets.
 Dans tous les cas, la fonction retourne un tableau d'identifiants des objets en question, indexés par leurs noms.
-On ne retourne pas les identifiants des objets qui n'ont pas définis d'option `nom`.
+Les identifiants des objets qui n'ont pas définis d'option `nom` sont indexés par ordre de création.
 Sur un SPIP fraîchement installé, l'exemple ci-dessus retournerait donc :
 
 ```php
 array(
+    0 => 1, // l'identifiant du mot-clé "humeur"
     'rubrique_hors_menu' => 1,
     'rubrique_agenda' => 2,
 )

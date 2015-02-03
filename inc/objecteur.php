@@ -18,9 +18,9 @@ if (!defined('_ECRIRE_INC_VERSION')) return;
  * dans la base de données s'il existe déjà un objet correspondant à
  * la description. S'il n'y a pas encore d'objet correspondant, on le
  * crée. On retourne un tableaux des identifiants des objets, indexés
- * par leurs noms. Les identifiants des objets qui n'ont pas d'option
- * 'nom' définie ne sont pas retournés. Si quelque chose s'est mal
- * passé, on retourne un message d'erreur.
+ * par leurs noms. Les identifiants des objets qui n'ont pas définis
+ * d'option `nom` sont indexés par ordre de création. Si quelque chose
+ * s'est mal passé, on retourne un message d'erreur.
  *
  * @param array $objets : Un tableau de définitions d'objets.
  *
@@ -57,6 +57,7 @@ $objecteur(array(
 ));
 
 -> array(
+    0 => 1, // l'identifiant du mot-clé "humeur"
     'rubrique_hors_menu' => 1,
     'rubrique_agenda' => 2,
 )
@@ -81,6 +82,8 @@ function inc_objecteur_dist ($objets, $forcer_creation=FALSE) {
 
         if (isset($objet['options']['nom'])) {
             $ids_objets[$objet['options']['nom']] = $id_objet;
+        } else {
+            $ids_objets[] = $id_objet;
         }
 
         /* Gestion des objets enfants */
