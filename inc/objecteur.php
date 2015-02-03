@@ -63,13 +63,11 @@ function inc_objecteur_dist ($objets) {
 
     foreach ($objets as $objet) {
 
-        if ( ! definition_objet_valide($objet)) {
+        if ($err = objecteur_valider_definition($objet)) {
 
-            spip_log("objet persistant mal défini : " .
-                     var_export($objet, TRUE), _LOG_ERREUR);
+            spip_log("objecteur: définition de l'objet invalide : $err", _LOG_ERREUR);
 
-            return "erreur : objet " . var_export($objet, TRUE) .
-                " non valide";
+            return "définition de l'objet invalide : $err";
         }
 
         $id_objet = objecteur_creer_objet($objet);
@@ -116,13 +114,11 @@ function inc_objecteur_effacer_dist ($objets) {
 
     foreach ($objets as $objet) {
 
-        if ( ! definition_objet_valide($objet)) {
+        if ($err = objecteur_valider_definition($objet)) {
 
-            spip_log("objet persistant mal défini : "
-                     . var_export($objet, TRUE), _LOG_ERREUR);
+            spip_log("objecteur_effacer: définition de l'objet invalide : $err", _LOG_ERREUR);
 
-            return "erreur : objet " . var_export($objet, TRUE)
-                                     . " non valide";
+            return "définition de l'objet invalide : $err";
         }
 
         /* On commence par supprimer les enfants */
@@ -175,18 +171,48 @@ function objecteur_trouver ($def_objet) {
  *
  * @param array $def_objet : le tableau de définition de l'objet
  *
- * @return bool : True si le tableau est valide, False sinon
+ * @return mixed : Un message d'erreur si la définition est invalide,
+ *                 rien sinon.
  */
-function definition_objet_valide ($def_objet) {
+function objecteur_valider_definition ($def_objet) {
 
-    // TODO vérifier que les champs définis correspondent bien à des
-    //      champs de la table de la BD
+    $string_objet = var_export($def_objet, TRUE);
 
-    return (isset($def_objet['objet'])
-            AND table_objet_sql($def_objet['objet'])
-            AND isset($def_objet['options'])
-            AND isset($def_objet['options']['nom'])
-            AND $def_objet['options']['nom']);
+    if ( ! is_array($def_objet)) {
+        return "La définition de l'objet doit être un tableau !" .
+            "\n$string_objet";
+    }
+
+    if ( ! isset($def_objet['objet'])) {
+        return "La définition de l'objet n'as pas de clé 'objet'" .
+            "\n$string_objet";
+    }
+    if ( ! isset($def_objet['options'])) {
+        return "La définition de l'objet n'as pas de clé 'options'" .
+            "\n$string_objet";
+    }
+
+    $type_objet = $def_objet['objet'];
+    $options = $def_objet['options'];
+
+    if ( ! table_objet_sql($type_objet)) {
+        return "Le type d'objet $type_objet n'existe pas !" .
+            "\n$string_objet";
+    }
+
+    if (( ! isset($options['nom'])) OR ( ! trim($options['nom']))) {
+        return "L'option 'nom' de l'objet n'est pas définie" .
+            "\n$string_objet";
+    }
+
+    /* Si l'objet est valide, on teste récursivement les enfants */
+    $enfants = isset($def_objet['enfants']) ? $def_objet['enfants'] : array();
+
+    foreach ($enfants as $enfant) {
+        if ($err = objecteur_valider_definition($enfant)) {
+            return $err;
+        }
+    }
 }
 
 /**
