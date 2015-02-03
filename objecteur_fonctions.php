@@ -65,7 +65,6 @@ function maj_meta ($nom_meta, $cle, $valeur=NULL) {
  *
  * @api
  * @param string $type    : Nom de l'objet
- * @param string $serveur : Nom du connecteur
  *
  * @return string : Nom de la clé primaire
 **/
