@@ -14,7 +14,7 @@ On charge la fonction via le mécanisme habituel de SPIP :
 $objecteur = charger_fonction('objecteur', 'inc');
 ```
 
-Et on lui passe en paramètre une liste de définitions d'objets :
+Et on lui passe en paramètre une définition, ou une liste de définitions d'objets :
 
 ```php
 $objecteur(array(
@@ -50,27 +50,26 @@ Sur un SPIP fraîchement installé, l'exemple ci-dessus retournerait donc :
 
 ```php
 array(
-    0 => 1, // l'identifiant du mot-clé "humeur"
     'rubrique_hors_menu' => 1,
     'rubrique_agenda' => 2,
+    0 => 1, // l'identifiant du mot-clé "humeur"
 )
 ```
 
 Au premier appel, la fonction crée les objets, puis elle ne fait que retourner les identifiants.
-Si quelque chose s'est mal passé, ou que le tableau d'objets passé en paramètre est mal définit, la fonction retourne un message d'erreur.
+Si quelque chose s'est mal passé, ou que le tableau d'objets passé en paramètre est mal défini, la fonction retourne un message d'erreur.
 
 Un deuxième paramètre permet de forcer la création de nouveaux objets, même s'il en existe déjà de similaires dans la base de données :
 
 ```php
-$objecteur(array(
-               array(
-                   'objet' => 'article',
-                   'options' => array(
-                       'titre' => 'nouvel article',
-                   ),
-               ),
-           ),
-           TRUE);
+$objecteur(
+    array(
+        'objet' => 'article',
+        'options' => array(
+            'titre' => 'nouvel article',
+        ),
+    ),
+    TRUE);
 ```
 
 Ainsi, chaque appel créera un nouvel article.
@@ -83,14 +82,15 @@ On l'utilise comme la fonction `objecteur` :
 
 ```php
 $objecteur_effacer = charger_fonction('objecteur_effacer', 'inc');
-$objecteur_effacer(array(
+$objecteur_effacer(
     array(
         'objet' => 'mot',
         'options' => array(
             'titre' => 'humeur',
         ),
     ),
-));
+);
 ```
 
 La fonction se charge alors de supprimer les objets éditoriaux qui correspondent aux définitions passées en paramètre.
+S'il y a plusieurs objets correspondant à la définition, on n'en efface qu'un seul.

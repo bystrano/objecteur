@@ -14,15 +14,17 @@ if (!defined('_ECRIRE_INC_VERSION')) return;
 /**
  * Créer ou retrouver des objets
  *
- * Pour chacun des objets de la liste passée en paramètre, on cherche
- * dans la base de données s'il existe déjà un objet correspondant à
- * la description. S'il n'y a pas encore d'objet correspondant, on le
+ * Pour la définition d'objet (ou pour chaque objet de la liste de
+ * définitions) passée en paramètre, on cherche dans la base de
+ * données s'il existe déjà un objet correspondant à la
+ * description. S'il n'y a pas encore d'objet correspondant, on le
  * crée. On retourne un tableaux des identifiants des objets, indexés
  * par leurs noms. Les identifiants des objets qui n'ont pas définis
  * d'option `nom` sont indexés par ordre de création. Si quelque chose
  * s'est mal passé, on retourne un message d'erreur.
  *
- * @param array $objets : Un tableau de définitions d'objets.
+ * @param array $objets : Une définition d'objet, ou un tableau de
+ *                        définitions d'objets.
  *
  * @return mixed : Un tableau d'identifiants indexés par nom d'objet,
  *                 ou un message d'erreur si quelque chose s'est mal
@@ -67,6 +69,13 @@ function inc_objecteur_dist ($objets, $forcer_creation=FALSE) {
 
     include_spip('action/editer_objet');
 
+    /* Si le paramètre $objets à une clé 'objet', c'est qu'on a passé
+       directemenet un définition d'objet plutôt qu'une liste de
+       définition. On en fait alors une liste… */
+    if (isset($objets['objet'])) {
+        $objets = array($objets);
+    }
+
     $ids_objets = array();
 
     foreach ($objets as $objet) {
@@ -88,6 +97,13 @@ function inc_objecteur_dist ($objets, $forcer_creation=FALSE) {
 
         /* Gestion des objets enfants */
         if (isset($objet['enfants']) AND $enfants = $objet['enfants']) {
+
+            /* à l'image du paramètre $objets de la fonction
+               objecteur, la clé enfants peut être une définition
+               d'objet plutôt qu'une liste de définitions. */
+            if (isset($enfants['objet'])) {
+                $enfants = array($enfants);
+            }
 
             foreach ($enfants as $i => $enfant) {
                 $enfants[$i]['options']['id_parent'] = $id_objet;
@@ -112,10 +128,11 @@ function inc_objecteur_dist ($objets, $forcer_creation=FALSE) {
 /**
  * Effacer des objets en masse
  *
- * On efface les objets qui correspondent aux définitions de la liste
- * passée en paramètre
+ * On efface le ou les objets qui correspondent à la ou aux
+ * définitions de la liste passée en paramètre.
  *
- * @param array $objets : Une liste de définitions d'objets
+ * @param array $objets : Une définition d'objet, ou un tableau de
+ *                        définitions d'objets.
  *
  * @return mixed : Un message d'erreur si quelque chose s'est mal
  *                 passé, rien sinon
@@ -124,6 +141,13 @@ function inc_objecteur_effacer_dist ($objets) {
 
     include_spip('base/abstract_sql');
     include_spip('inc/autoriser');
+
+    /* Si le paramètre $objets à une clé 'objet', c'est qu'on a passé
+       directemenet un définition d'objet plutôt qu'une liste de
+       définition. On en fait alors une liste… */
+    if (isset($objets['objet'])) {
+        $objets = array($objets);
+    }
 
     foreach ($objets as $objet) {
 
