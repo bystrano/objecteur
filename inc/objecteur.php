@@ -92,6 +92,12 @@ function inc_objecteur_dist ($objets, $forcer_creation=FALSE) {
 
     foreach ($liste_objets as $objet) {
 
+        $objet = objecteur_remplacer_references($objet, $ids_objets);
+
+        if (is_string($objet)) {
+            return "Impossible de créer l'objet : $objet";
+        }
+
         $id_objet = objecteur_creer_objet($objet, $forcer_creation);
 
         if (isset($objet['options']['nom'])) {
@@ -299,6 +305,42 @@ function objecteur_valider_definition ($def_objet) {
             return $err;
         }
     }
+}
+
+/**
+ * Remplacer les références à des objets existants par leurs
+ * identifiants dans la définition d'un objet
+ *
+ * On parcourt les options de l'objet, et on remplace les références
+ * entre des @ par l'identifiant correspondant de la liste de objets.
+ *
+ * @param array $objet : Une définition d'un objet. Les éventuels
+ *                       enfants sont ignorés, comme les objets ne
+ *                       sont plus sensés en avoir à cette étape.
+ *
+ * @param array $ids_objets : Un tableau clé/valeur dont les clés sont
+ *                            des nom d'objets et les valeurs leurs
+ *                            identifiants
+ *
+ * @return array : La définition de l'objet dans laquelle on a
+ *                 remplacé les références par leurs valeurs, ou un
+ *                 message d'erreur si l'une des références ne peut
+ *                 être déterminée.
+ */
+function objecteur_remplacer_references ($objet, $ids_objets) {
+
+    foreach ($objet['options'] as $cle => $valeur) {
+        if (($cle !== 'nom') AND (preg_match('/^@.*@$/', $valeur) === 1)) {
+            $reference = trim($valeur, '@');
+            if (array_key_exists($reference, $ids_objets)) {
+                $objet['options'][$cle] = $ids_objets[$reference];
+            } else {
+                return "référence manquante : $reference";
+            }
+        }
+    }
+
+    return $objet;
 }
 
 /**
