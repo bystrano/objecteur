@@ -94,3 +94,23 @@ $objecteur_effacer(
 
 La fonction se charge alors de supprimer les objets éditoriaux qui correspondent aux définitions passées en paramètre.
 S'il y a plusieurs objets correspondants à la définition, on n'en efface qu'un seul.
+
+Les définitions d'objets
+------------------------
+
+Une définition d'objet est un tableau qui définit un ou plusieurs objets éditoriaux à créer ou supprimer.
+
+Pour être valide, une définition d'objet _doit_ posséder une clé `objet`, dont la valeur _doit_ être un nom d'objet éditorial valide.
+Elle _doit_ aussi avoir une clé `options`, qui _doit_ être un tableau.
+Les clés de ce tableau d'options _doivent_ être soit `nom`, soit `id_parent`, soit des noms de champs de la table SQL correspondant au type d'objet éditorial donné par la clé `objet` de la définition.
+
+L'option `nom` permet de définir un identifiant pour l'objet qui sera créé ou retourné.
+Cet identifiant sera utilisé comme clé dans le tableau des `id_objets` retournés par la fonction `objecteur`.
+`TODO` On pourra aussi s'en servir pour créer des liens de traduction entre les objets crées par l'objecteur.
+
+L'option `id_parent` _peut_ donner un `id_objet` d'objet parent.
+On peux utiliser `id_parent` même si le champ SQL qui gère la parenté s'appelle autrement, il sera remplacé automatiquement par le bon nom de champ, comme `id_groupe` pour les mots-clés ou `id_rubrique` pour les articles.
+
+Chaque définition d'objet _peut_ aussi avoir une clé `enfants`, qui permet de définir une arborescence d'objets éditoriaux.
+Sa valeur doit être soit une définition, soit une liste de définitions d'objet éditoriaux.
+Si on a défini des options `id_parent` pour les objets éditoriaux enfants, ces options seront ignorées.
