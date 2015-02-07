@@ -46,6 +46,16 @@ function essais_objecteur_calculer_liste(){
                 array('objet' => 'rubrique'),
             ),
         ),
+        "Création de plusieurs objets" => array (
+            array (
+                array('objet' => 'rubrique'),
+                array('objet' => 'article'),
+            ),
+            array (
+                array('objet' => 'rubrique'),
+                array('objet' => 'article'),
+            ),
+        ),
     );
 
     return $essais;
