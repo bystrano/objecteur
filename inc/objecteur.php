@@ -116,8 +116,7 @@ function inc_objecteur_dist ($objets, $forcer_creation=FALSE) {
  */
 function objecteur_calculer_liste ($objets) {
 
-    // Bon ben on a du pain sur la planche…
-    return array();
+    return $objets;
 }
 
 /**
