@@ -14,7 +14,7 @@ On charge la fonction via le mécanisme habituel de SPIP :
 $objecteur = charger_fonction('objecteur', 'inc');
 ```
 
-Et on lui passe en paramètre une définition, ou une liste de définitions d'objets :
+On lui passe en paramètre une définition, ou une liste de définitions d'objets :
 
 ```php
 $objecteur(array(
@@ -45,7 +45,7 @@ $objecteur(array(
 
 S'il y a déjà des objets éditoriaux qui correspondent aux définitions, on ne crée pas de nouveaux objets.
 Dans tous les cas, la fonction retourne un tableau d'identifiants des objets en question, indexés par leurs noms.
-Les identifiants des objets qui n'ont pas définis d'option `nom` sont indexés par ordre de création.
+Les identifiants des objets qui n'ont pas défini d'option `nom` sont indexés par ordre de création.
 Sur un SPIP fraîchement installé, l'exemple ci-dessus retournerait donc :
 
 ```php
@@ -93,4 +93,4 @@ $objecteur_effacer(
 ```
 
 La fonction se charge alors de supprimer les objets éditoriaux qui correspondent aux définitions passées en paramètre.
-S'il y a plusieurs objets correspondant à la définition, on n'en efface qu'un seul.
+S'il y a plusieurs objets correspondants à la définition, on n'en efface qu'un seul.
