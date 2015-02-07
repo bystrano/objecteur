@@ -144,6 +144,12 @@ function inc_objecteur_effacer_dist ($objets) {
 
     $liste_objets = objecteur_effacer_calculer_liste($objets);
 
+    $liste_objets = objecteur_effacer_resoudre_references($liste_objets);
+
+    if (is_string($liste_objets)) {
+        return "Impossible de supprimer les objets : $liste_objets";
+    }
+
     foreach ($liste_objets as $objet) {
 
         $id_objet = objecteur_trouver($objet);
@@ -155,6 +161,9 @@ function inc_objecteur_effacer_dist ($objets) {
             } else {
                 return "supprimer " . $objet['objet'] . " $id_objet : action non autorisée";
             }
+
+        } else {
+            return "suppression impossible, objet introuvable :\n" . var_export($objet, TRUE);
         }
     }
 }
@@ -353,6 +362,14 @@ function objecteur_effacer_calculer_liste ($objets) {
             unset($objet['enfants']);
         }
 
+        /* On remplace une éventuelle clé 'id_parent' par une clé du nom
+           du champ id_parent du type d'objet en question. */
+        if (isset($objet['options']['id_parent'])) {
+            $id_parent = $objet['options']['id_parent'];
+            unset($objet['options']['id_parent']);
+            $objet['options'][id_parent_objet($objet['objet'])] = $id_parent;
+        }
+
         $liste_objets[] = $objet;
     }
 
@@ -417,6 +434,63 @@ function objecteur_ordonner_liste ($liste_objets) {
     }
 
     return $liste_ordonnee;
+}
+
+/**
+ * Remplacer les références à des objets existants par leurs
+ * identifiants dans une liste d'objets à effacer
+ *
+ * On parcourt les objets de la liste, en résolvant les références,
+ * jusqu'à ce qu'on ait tout résolu ou qu'on soit bloqué
+ *
+ * @param array $objet : Une liste de définitions d'objets. Les
+ *                       éventuels enfants sont ignorés, comme les
+ *                       objets ne sont plus sensés en avoir à cette
+ *                       étape.
+ *
+ * @return array : La liste de définitions d'objets dans laquelle on a
+ *                 remplacé les références par leurs valeurs, ou un
+ *                 message d'erreur si l'une des références ne peut
+ *                 être déterminée.
+ */
+function objecteur_effacer_resoudre_references ($liste_objets) {
+
+    $liste_resolue = $liste_objets;
+    $ids_objets = array();
+
+    while ($liste_objets) {
+
+        $compteur_objets_trouves = 0;
+
+        foreach ($liste_objets as $index => $objet) {
+
+            $objet = objecteur_remplacer_references($objet, $ids_objets);
+
+            if ( ! is_string($objet)) {
+                if ($id_objet = objecteur_trouver($objet)) {
+                    $ids_objets[$objet['options']['nom']] = $id_objet;
+                } else {
+                    return "objet introuvable\n" . var_export($objet, TRUE);
+                }
+                $liste_resolue[$index] = $objet;
+                unset($liste_objets[$index]);
+                $compteur_objets_trouves++;
+            }
+
+        }
+
+        if ($compteur_objets_trouves === 0) {
+
+            $references_manquantes = '';
+            foreach ($liste_objets as $objet) {
+                $references_manquantes .= "\n - " . objecteur_remplacer_references($objet, $ids_objets);
+            }
+
+            return "La liste n'est pas valide : $references_manquantes";
+        }
+    }
+
+    return $liste_resolue;
 }
 
 /**
