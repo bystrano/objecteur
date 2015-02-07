@@ -56,6 +56,93 @@ function essais_objecteur_calculer_liste(){
                 array('objet' => 'article'),
             ),
         ),
+        "Enfants" => array (
+            array (
+                0 =>
+                array (
+                    'objet' => 'rubrique',
+                    'options' =>
+                    array (
+                        'nom' => '__rubrique-0',
+                    ),
+                ),
+                1 =>
+                array (
+                    'objet' => 'article',
+                    'options' =>
+                    array (
+                        'id_parent' => '@__rubrique-0@',
+                    ),
+                ),
+            ),
+            array (
+                array(
+                    'objet' => 'rubrique',
+                    'enfants' => array(
+                        array(
+                            'objet' => 'article'
+                        ),
+                    ),
+                ),
+            ),
+        ),
+        "petits enfants" => array (
+            array (
+                0 =>
+                array (
+                    'objet' => 'rubrique',
+                    'options' =>
+                    array (
+                        'nom' => '__rubrique-1',
+                    ),
+                ),
+                1 =>
+                array (
+                    'objet' => 'article',
+                    'options' =>
+                    array (
+                        'id_parent' => '@__rubrique-1@',
+                    ),
+                ),
+                2 =>
+                array (
+                    'objet' => 'rubrique',
+                    'options' =>
+                    array (
+                        'nom' => 'sousrub',
+                        'id_parent' => '@__rubrique-1@',
+                    ),
+                ),
+                3 =>
+                array (
+                    'objet' => 'article',
+                    'options' =>
+                    array (
+                        'id_parent' => '@sousrub@',
+                    ),
+                ),
+            ),
+
+            array (
+                array(
+                    'objet' => 'rubrique',
+                    'enfants' => array(
+                        array(
+                            'objet' => 'article'
+                        ),
+                        array(
+                            'objet' => 'rubrique',
+                            'options' => array(
+                                'nom' => 'sousrub',
+                            ),
+                            'enfants' => array(
+                                array('objet' => 'article'),
+                            ),
+                        ),
+                    ),
+                ),
+            ),
+        ),
     );
 
     return $essais;

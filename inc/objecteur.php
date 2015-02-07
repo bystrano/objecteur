@@ -105,6 +105,12 @@ function inc_objecteur_dist ($objets, $forcer_creation=FALSE) {
     return $ids_objets;
 }
 
+/* Pour nommer automatiquement les objets non-nommés, on les numérote
+   avec un compteur global. Ça serait plus simple de faire ça avec des
+   id aléatoires, mais dans ce cas on ne pourrait plus tester, donc on
+   préfère bricoler avec la globale… */
+$GLOBALS['objecteur_compteur'] = 0;
+
 /**
  * Calcule les choses à faire pour créer une arborescence d'objets
  *
@@ -116,7 +122,45 @@ function inc_objecteur_dist ($objets, $forcer_creation=FALSE) {
  */
 function objecteur_calculer_liste ($objets) {
 
-    return $objets;
+    $liste_objets = array();
+
+    foreach ($objets as $objet) {
+
+        /* Gestion des objets enfants */
+        if (isset($objet['enfants']) AND $enfants = $objet['enfants']) {
+
+            /* à l'image du paramètre $objets de la fonction
+               objecteur, la clé enfants peut être une définition
+               d'objet plutôt qu'une liste de définitions. */
+            if (isset($enfants['objet'])) {
+                $enfants = array($enfants);
+            }
+
+            /* si l'objet parent n'a pas de nom, on lui en donne un */
+            if ( ! isset($objet['options']['nom'])) {
+
+                $objet['options']['nom'] = '__' . $objet['objet'] . '-'
+                    . $GLOBALS['objecteur_compteur'];
+
+                $GLOBALS['objecteur_compteur'] += 1;
+            }
+
+            foreach ($enfants as $i => $enfant) {
+                $enfants[$i]['options']['id_parent'] = "@" . $objet['options']['nom'] . "@";
+            }
+
+            $ids_enfants = objecteur_calculer_liste($enfants);
+
+            unset($objet['enfants']);
+            $liste_objets[] = $objet;
+            $liste_objets = array_merge($liste_objets, $ids_enfants);
+
+        } else {
+            $liste_objets[] = $objet;
+        }
+    }
+
+    return $liste_objets;
 }
 
 /**
