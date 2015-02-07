@@ -90,6 +90,12 @@ function inc_objecteur_dist ($objets, $forcer_creation=FALSE) {
 
     $liste_objets = objecteur_calculer_liste($objets);
 
+    $liste_objets = objecteur_ordonner_liste($liste_objets);
+
+    if (is_string($liste_objets)) {
+        return "Impossible de créer les objets : $liste_objets";
+    }
+
     foreach ($liste_objets as $objet) {
 
         $objet = objecteur_remplacer_references($objet, $ids_objets);
@@ -256,10 +262,10 @@ function objecteur_valider_definition ($def_objet) {
 $GLOBALS['objecteur_compteur'] = 0;
 
 /**
- * Calcule les choses à faire pour créer une arborescence d'objets
+ * Applatit une arborescence d'objets
  *
- * Retourne une liste de définitions d'objets à créer, dans le bon
- * ordre. La fonction objecteur n'a alors plus qu'à créer ces objets.
+ * Retourne une liste de définitions d'objets à créer pour créer
+ * l'arborescence.
  *
  * @param array $objets : une liste de définitions d'objets
  * @return array : une liste d'objets sans enfants, prêts à être créés
@@ -306,6 +312,67 @@ function objecteur_calculer_liste ($objets) {
 
     return $liste_objets;
 }
+
+/**
+ * S'assurer que les références d'une liste d'objets sont calculables.
+ *
+ * On vérifie que chaque référence existera déjà au moment où on en
+ * aura besoin. Si ça n'est pas le cas, on essaie de réordonner la
+ * liste pour que ça marche, et si ça n'est pas possible, on renvoie
+ * un message d'erreur.
+ *
+ * @param array $liste_objets : Un liste d'objets sans enfants telle
+ *                              que produite par la fonction
+ *                              objecteur_calculer_liste.
+ *
+ * @return mixed : Un message d'erreur si une référence ne peut être
+ *                 satisfaite, la liste dans un ordre qui ne posera
+ *                 pas de problème de références.
+ */
+function objecteur_ordonner_liste ($liste_objets) {
+
+    $ids_objets = array();
+    $liste_ordonnee = array();
+
+    /* on parcourt la liste des objets, et quand les références d'un
+       objet sont connues, on le retire de la liste pour le mettre
+       dans la liste ordonnée. Quand on les a tous essayés on
+       recommence avec ceux qui restent, en espérant que les
+       références qui manquaient ont été trouvées entre temps. Si on
+       parcourt toute la liste sans trouver aucun objet à ajouter à la
+       liste ordonnée, c'est que la liste n'est pas calculable. */
+    while ($liste_objets) {
+
+        $nb_objets = count($liste_objets);
+
+        foreach ($liste_objets as $index => $objet) {
+            $err = objecteur_remplacer_references($objet, $ids_objets);
+            /* Si on a pu remplacer les références, on met l'objet
+               dans la liste ordonnée, et on le retire de la liste. */
+            if ( ! is_string($err)) {
+                $ids_objets[$objet['options']['nom']] = 'ok';
+                $liste_ordonnee[] = $objet;
+                unset($liste_objets[$index]);
+            }
+        }
+
+        /* Si le nombre d'objets dans la liste n'a pas baissé, c'est
+           qu'on tourne en rond */
+        if ((count($liste_objets) > 0) AND
+            (count($liste_objets) === $nb_objets)) {
+
+            $references_manquantes = '';
+            foreach ($liste_objets as $objet) {
+                $references_manquantes .= "\n - " . objecteur_remplacer_references($objet, $ids_objets);
+            }
+
+            return "La liste n'est pas valide : $references_manquantes";
+        }
+    }
+
+    return $liste_ordonnee;
+}
+
 /**
  * Remplacer les références à des objets existants par leurs
  * identifiants dans la définition d'un objet
