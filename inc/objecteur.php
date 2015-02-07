@@ -86,6 +86,11 @@ function inc_objecteur_dist ($objets, $forcer_creation=FALSE) {
 
             return "définition de l'objet invalide : $err";
         }
+    }
+
+    $liste_objets = objecteur_calculer_liste($objets);
+
+    foreach ($liste_objets as $objet) {
 
         $id_objet = objecteur_creer_objet($objet, $forcer_creation);
 
@@ -95,34 +100,24 @@ function inc_objecteur_dist ($objets, $forcer_creation=FALSE) {
             $ids_objets[] = $id_objet;
         }
 
-        /* Gestion des objets enfants */
-        if (isset($objet['enfants']) AND $enfants = $objet['enfants']) {
-
-            /* à l'image du paramètre $objets de la fonction
-               objecteur, la clé enfants peut être une définition
-               d'objet plutôt qu'une liste de définitions. */
-            if (isset($enfants['objet'])) {
-                $enfants = array($enfants);
-            }
-
-            foreach ($enfants as $i => $enfant) {
-                $enfants[$i]['options']['id_parent'] = $id_objet;
-            }
-
-            $objecteur = charger_fonction('objecteur', 'inc');
-
-            $ids_enfants = $objecteur($enfants);
-
-            /* Si on a reçu un string, c'est qu'il y a eu une erreur */
-            if (is_string($ids_enfants)) {
-                return $ids_enfants;
-            } else {
-                $ids_objets = array_merge($ids_objets, $ids_enfants);
-            }
-        }
     }
 
     return $ids_objets;
+}
+
+/**
+ * Calcule les choses à faire pour créer une arborescence d'objets
+ *
+ * Retourne une liste de définitions d'objets à créer, dans le bon
+ * ordre. La fonction objecteur n'a alors plus qu'à créer ces objets.
+ *
+ * @param array $objets : une liste de définitions d'objets
+ * @return array : une liste d'objets sans enfants, prêts à être créés
+ */
+function objecteur_calculer_liste ($objets) {
+
+    // Bon ben on a du pain sur la planche…
+    return array();
 }
 
 /**
