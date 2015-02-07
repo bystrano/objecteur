@@ -38,6 +38,7 @@ echo "OK";
 function essais_objecteur_calculer_liste(){
 
     $essais = array (
+
         "Création d'objet simple" => array (
             array (
                 array('objet' => 'rubrique'),
@@ -46,6 +47,7 @@ function essais_objecteur_calculer_liste(){
                 array('objet' => 'rubrique'),
             ),
         ),
+
         "Création de plusieurs objets" => array (
             array (
                 array('objet' => 'rubrique'),
@@ -56,6 +58,7 @@ function essais_objecteur_calculer_liste(){
                 array('objet' => 'article'),
             ),
         ),
+
         "Enfants" => array (
             array (
                 0 =>
@@ -71,7 +74,7 @@ function essais_objecteur_calculer_liste(){
                     'objet' => 'article',
                     'options' =>
                     array (
-                        'id_parent' => '@__rubrique-0@',
+                        'id_rubrique' => '@__rubrique-0@',
                     ),
                 ),
             ),
@@ -86,6 +89,7 @@ function essais_objecteur_calculer_liste(){
                 ),
             ),
         ),
+
         "petits enfants" => array (
             array (
                 0 =>
@@ -101,7 +105,7 @@ function essais_objecteur_calculer_liste(){
                     'objet' => 'article',
                     'options' =>
                     array (
-                        'id_parent' => '@__rubrique-1@',
+                        'id_rubrique' => '@__rubrique-1@',
                     ),
                 ),
                 2 =>
@@ -118,7 +122,7 @@ function essais_objecteur_calculer_liste(){
                     'objet' => 'article',
                     'options' =>
                     array (
-                        'id_parent' => '@sousrub@',
+                        'id_rubrique' => '@sousrub@',
                     ),
                 ),
             ),
@@ -143,6 +147,26 @@ function essais_objecteur_calculer_liste(){
                 ),
             ),
         ),
+
+        "On remplace les clés id_parent" => array (
+            array (
+                array(
+                    'objet' => 'article',
+                    'options' => array(
+                        'id_rubrique' => 2,
+                    ),
+                ),
+            ),
+            array (
+                array(
+                    'objet' => 'article',
+                    'options' => array(
+                        'id_parent' => 2,
+                    ),
+                ),
+            ),
+        ),
+
     );
 
     return $essais;

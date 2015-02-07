@@ -76,8 +76,6 @@ function inc_objecteur_dist ($objets, $forcer_creation=FALSE) {
         $objets = array($objets);
     }
 
-    $ids_objets = array();
-
     foreach ($objets as $objet) {
 
         if ($err = objecteur_valider_definition($objet)) {
@@ -96,22 +94,15 @@ function inc_objecteur_dist ($objets, $forcer_creation=FALSE) {
         return "Impossible de créer les objets : $liste_objets";
     }
 
+    $ids_objets = array();
+
     foreach ($liste_objets as $objet) {
 
         $objet = objecteur_remplacer_references($objet, $ids_objets);
 
-        if (is_string($objet)) {
-            return "Impossible de créer l'objet : $objet";
-        }
-
         $id_objet = objecteur_creer_objet($objet, $forcer_creation);
 
-        if (isset($objet['options']['nom'])) {
-            $ids_objets[$objet['options']['nom']] = $id_objet;
-        } else {
-            $ids_objets[] = $id_objet;
-        }
-
+        $ids_objets[$objet['options']['nom']] = $id_objet;
     }
 
     return $ids_objets;
@@ -271,6 +262,14 @@ function objecteur_calculer_liste ($objets) {
     $liste_objets = array();
 
     foreach ($objets as $objet) {
+
+        /* On remplace une éventuelle clé 'id_parent' par une clé du nom
+           du champ id_parent du type d'objet en question. */
+        if (isset($objet['options']['id_parent'])) {
+            $id_parent = $objet['options']['id_parent'];
+            unset($objet['options']['id_parent']);
+            $objet['options'][id_parent_objet($objet['objet'])] = $id_parent;
+        }
 
         /* Gestion des objets enfants */
         if (isset($objet['enfants']) AND $enfants = $objet['enfants']) {
@@ -476,14 +475,6 @@ function objecteur_creer_objet ($def_objet, $forcer_creation) {
     $options = $def_objet['options'];
 
     if (isset($options['nom'])) unset($options['nom']);
-
-    /* On remplace une éventuelle clé 'id_parent' par une clé du nom
-       du champ id_parent du type d'objet en question. */
-    if (isset($options['id_parent'])) {
-        $id_parent = $options['id_parent'];
-        unset($options['id_parent']);
-        $options[id_parent_objet($type_objet)] = $id_parent;
-    }
 
     /* S'il y a déjà un objet correspondant à la description
        on le prend plutôt que d'en créer un nouveau */

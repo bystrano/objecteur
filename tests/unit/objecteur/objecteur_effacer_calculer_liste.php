@@ -62,7 +62,7 @@ function essais_objecteur_effacer_calculer_liste(){
                     'objet' => 'article',
                     'options' =>
                     array (
-                        'id_parent' => '@__rubrique-0@',
+                        'id_rubrique' => '@__rubrique-0@',
                     ),
                 ),
                 array (
@@ -90,14 +90,14 @@ function essais_objecteur_effacer_calculer_liste(){
                     'objet' => 'article',
                     'options' =>
                     array (
-                        'id_parent' => '@__rubrique-1@',
+                        'id_rubrique' => '@__rubrique-1@',
                     ),
                 ),
                 array (
                     'objet' => 'article',
                     'options' =>
                     array (
-                        'id_parent' => '@sousrub@',
+                        'id_rubrique' => '@sousrub@',
                     ),
                 ),
                 array (
