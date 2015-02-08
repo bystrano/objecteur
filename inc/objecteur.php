@@ -88,6 +88,10 @@ function inc_objecteur_dist ($objets, $forcer_creation=FALSE) {
 
     $liste_objets = objecteur_calculer_liste($objets);
 
+    if ($err = objecteur_valider_liste($liste_objets)) {
+        return $err;
+    }
+
     $liste_objets = objecteur_ordonner_liste($liste_objets);
 
     if (is_string($liste_objets)) {
@@ -143,6 +147,10 @@ function inc_objecteur_effacer_dist ($objets) {
     }
 
     $liste_objets = objecteur_effacer_calculer_liste($objets);
+
+    if ($err = objecteur_valider_liste($liste_objets)) {
+        return $err;
+    }
 
     $liste_objets = objecteur_effacer_resoudre_references($liste_objets);
 
@@ -491,6 +499,27 @@ function objecteur_effacer_resoudre_references ($liste_objets) {
     }
 
     return $liste_resolue;
+}
+
+/**
+ * Teste la validité d'une liste d'objets
+ *
+ * @param array $liste_objets : la liste de définitions d'objets
+ *
+ * @return mixed : Un message d'erreur si la liste est invalide, rien
+ *                 sinon.
+ */
+function objecteur_valider_liste ($liste_objets) {
+
+    /* On teste l'unicité des noms */
+    $noms_objets = array();
+    foreach ($liste_objets as $objet) {
+        if ( ! in_array($objet['options']['nom'], $noms_objets)) {
+            $noms_objets[] = $objet['options']['nom'];
+        } else {
+            return "Liste invalide : Le nom '" . $objet['options']['nom'] . "' est défini plusieurs fois !";
+        }
+    }
 }
 
 /**
