@@ -404,6 +404,51 @@ function objecteur_effacer_calculer_liste ($objets) {
 }
 
 /**
+ * Teste la validité d'une liste d'objets
+ *
+ * @param array $liste_objets : la liste de définitions d'objets
+ *
+ * @return mixed : Un message d'erreur si la liste est invalide, rien
+ *                 sinon.
+ */
+function objecteur_valider_liste ($liste_objets) {
+
+    /* On teste l'unicité des noms */
+    $noms_objets = array();
+    foreach ($liste_objets as $objet) {
+        if ( ! in_array($objet['options']['nom'], $noms_objets)) {
+            $noms_objets[] = $objet['options']['nom'];
+        } else {
+            return _T('objecteur:erreur_liste_invalide',
+                      array('err' => _T('objecteur:erreur_doublon_nom',
+                                        array('nom' => $objet['options']['nom']))));
+        }
+    }
+}
+
+/**
+ * Élimine les doublons dans une liste d'objets
+ *
+ * Description longue
+ *
+ * @param array $liste_objets : La liste d'objets
+ *
+ * @return array : La liste sans les doublons
+ */
+function objecteur_dedoublonner_liste ($liste_objets) {
+
+    $liste_filtree = array();
+
+    foreach ($liste_objets as $objet) {
+        if ( ! in_array($objet, $liste_filtree)) {
+            $liste_filtree[] = $objet;
+        }
+    }
+
+    return $liste_filtree;
+}
+
+/**
  * S'assurer que les références d'une liste d'objets sont calculables.
  *
  * On vérifie que chaque référence existera déjà au moment où on en
@@ -521,51 +566,6 @@ function objecteur_effacer_resoudre_references ($liste_objets) {
     }
 
     return $liste_resolue;
-}
-
-/**
- * Teste la validité d'une liste d'objets
- *
- * @param array $liste_objets : la liste de définitions d'objets
- *
- * @return mixed : Un message d'erreur si la liste est invalide, rien
- *                 sinon.
- */
-function objecteur_valider_liste ($liste_objets) {
-
-    /* On teste l'unicité des noms */
-    $noms_objets = array();
-    foreach ($liste_objets as $objet) {
-        if ( ! in_array($objet['options']['nom'], $noms_objets)) {
-            $noms_objets[] = $objet['options']['nom'];
-        } else {
-            return _T('objecteur:erreur_liste_invalide',
-                      array('err' => _T('objecteur:erreur_doublon_nom',
-                                        array('nom' => $objet['options']['nom']))));
-        }
-    }
-}
-
-/**
- * Élimine les doublons dans une liste d'objets
- *
- * Description longue
- *
- * @param array $liste_objets : La liste d'objets
- *
- * @return array : La liste sans les doublons
- */
-function objecteur_dedoublonner_liste ($liste_objets) {
-
-    $liste_filtree = array();
-
-    foreach ($liste_objets as $objet) {
-        if ( ! in_array($objet, $liste_filtree)) {
-            $liste_filtree[] = $objet;
-        }
-    }
-
-    return $liste_filtree;
 }
 
 /**
