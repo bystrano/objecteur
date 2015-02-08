@@ -642,6 +642,12 @@ function objecteur_creer_objet ($def_objet, $forcer_creation) {
     /* Création d'un nouvel objet */
     if ( ! $id_objet) {
 
+        /* s'il y a un id_trad, on le met de côté pour plus tard */
+        if (isset($options['id_trad'])) {
+            $id_trad = $options['id_trad'];
+            unset($options['id_trad']);
+        }
+
         /* On fait une exception pour que ça fonctionne avec le plugin
            gma, mais à terme il faudrait plutôt implémenter l'api
            objet_inserer pour les groupes de mot-clés avec parents */
@@ -660,6 +666,13 @@ function objecteur_creer_objet ($def_objet, $forcer_creation) {
         }
 
         objet_modifier($type_objet, $id_objet, $options);
+
+        /* une fois l'objet créé, on s'occupe d'un éventuel lien de
+           traduction */
+        if ($id_trad) {
+            $referencer_traduction = charger_fonction('referencer_traduction','action');
+            $referencer_traduction($type_objet, $id_objet,$id_trad);
+        }
     }
 
     return $id_objet;
