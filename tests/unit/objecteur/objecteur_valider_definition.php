@@ -39,17 +39,17 @@ function essais_objecteur_valider_definition(){
     $essais = array (
         "Les strings ne sont pas acceptés" =>
         array (
-            'La définition de l\'objet doit être un tableau !
-\'hello\'',
+            _T('objecteur:erreur_definition_pas_tableau',
+               array('objet' => '\'hello\'')),
             'hello',
         ),
 
         "La clé options est obligatoire" =>
         array (
-            'La définition de l\'objet n\'as pas de clé \'options\'
-array (
+            _T('objecteur:erreur_definition_pas_cle_options',
+               array('objet' => 'array (
   \'objet\' => \'rubrique\',
-)',
+)')),
             array (
                 'objet' => 'rubrique',
             ),
@@ -57,14 +57,16 @@ array (
 
         "Les options ne peuvent pas être n'importe quoi" =>
         array (
-            'bloubliboulga n\'est pas une option valide
-array (
+            _T('objecteur:erreur_definition_cle_invalide',
+               array(
+                   'cle' => 'bloubliboulga',
+                   'objet' => 'array (
   \'objet\' => \'article\',
   \'options\' => 
   array (
     \'bloubliboulga\' => \'au plus vite\',
   ),
-)',
+)')),
         array (
             'objet' => 'article',
             'options' =>

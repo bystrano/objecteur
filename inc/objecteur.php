@@ -80,9 +80,12 @@ function inc_objecteur_dist ($objets, $forcer_creation=FALSE) {
 
         if ($err = objecteur_valider_definition($objet)) {
 
-            spip_log("objecteur: définition de l'objet invalide : $err", _LOG_ERREUR);
+            spip_log(_T('objecteur:log_definition_invalide',
+                        array('err' => $err)),
+                     _LOG_ERREUR);
 
-            return "définition de l'objet invalide : $err";
+            return _T('objecteur:erreur_definition_invalide',
+                      array('err' => $err));
         }
     }
 
@@ -95,7 +98,8 @@ function inc_objecteur_dist ($objets, $forcer_creation=FALSE) {
     $liste_objets = objecteur_ordonner_liste($liste_objets);
 
     if (is_string($liste_objets)) {
-        return "Impossible de créer les objets : $liste_objets";
+        return _T('objecteur:erreur_creation_objets_impossible',
+                  array('liste_objets' => $liste_objets));
     }
 
     $ids_objets = array();
@@ -140,9 +144,12 @@ function inc_objecteur_effacer_dist ($objets) {
 
         if ($err = objecteur_valider_definition($objet)) {
 
-            spip_log("objecteur_effacer: définition de l'objet invalide : $err", _LOG_ERREUR);
+            spip_log(_T('objecteur:log_definition_invalide',
+                        array('err' => $err)),
+                     _LOG_ERREUR);
 
-            return "définition de l'objet invalide : $err";
+            return _T('objecteur:erreur_definition_invalide',
+                      array('err' => $err));
         }
     }
 
@@ -155,7 +162,8 @@ function inc_objecteur_effacer_dist ($objets) {
     $liste_objets = objecteur_effacer_resoudre_references($liste_objets);
 
     if (is_string($liste_objets)) {
-        return "Impossible de supprimer les objets : $liste_objets";
+        return _T('objecteur:erreur_suppression_impossible',
+                  array('liste_objets' => $liste_objets));
     }
 
     foreach ($liste_objets as $objet) {
@@ -167,11 +175,16 @@ function inc_objecteur_effacer_dist ($objets) {
                 sql_delete(table_objet_sql($objet['objet']),
                            id_table_objet($objet['objet']) . '=' . intval($id_objet));
             } else {
-                return "supprimer " . $objet['objet'] . " $id_objet : action non autorisée";
+                return _T('objecteur:erreur_suppression_non_autorisee',
+                          array(
+                              'objet' => $objet['objet'],
+                              'id_objet' => $id_objet,
+                          ));
             }
 
         } else {
-            return "suppression impossible, objet introuvable :\n" . var_export($objet, TRUE);
+            return _T('objecteur:erreur_suppression_objet_introuvable',
+                      array('objet' => var_export($objet, TRUE)));
         }
     }
 }
@@ -212,25 +225,27 @@ function objecteur_valider_definition ($def_objet) {
     $string_objet = var_export($def_objet, TRUE);
 
     if ( ! is_array($def_objet)) {
-        return "La définition de l'objet doit être un tableau !" .
-            "\n$string_objet";
+        return _T('objecteur:erreur_definition_pas_tableau',
+                  array('objet' => $string_objet));
     }
 
     if ( ! isset($def_objet['objet'])) {
-        return "La définition de l'objet n'as pas de clé 'objet'" .
-            "\n$string_objet";
+        return _T('objecteur:erreur_definition_pas_cle_objet',
+                  array('objet' => $string_objet));
     }
+
     if ( ! isset($def_objet['options'])) {
-        return "La définition de l'objet n'as pas de clé 'options'" .
-            "\n$string_objet";
+        return _T('objecteur:erreur_definition_pas_cle_options',
+                  array('objet' => $string_objet));
+        return ;
     }
 
     $type_objet = $def_objet['objet'];
     $options = $def_objet['options'];
 
     if ( ! table_objet_sql($type_objet)) {
-        return "Le type d'objet $type_objet n'existe pas !" .
-            "\n$string_objet";
+        return _T('objecteur:erreur_definition_type_objet_introuvable',
+                  array('objet' => $string_objet));
     }
 
     include_spip('base/abstract_sql');
@@ -244,8 +259,12 @@ function objecteur_valider_definition ($def_objet) {
         if (($cle !== 'nom')
             AND ($cle !== 'id_parent')
             AND ( ! in_array($cle, $champs_table))) {
-            return "$cle n'est pas une option valide" .
-                "\n$string_objet";
+
+            return _T('objecteur:erreur_definition_cle_invalide',
+                      array(
+                          'cle' => $cle,
+                          'objet' => $string_objet,
+                      ));
         }
     }
 
@@ -437,7 +456,8 @@ function objecteur_ordonner_liste ($liste_objets) {
                 $references_manquantes .= "\n - " . objecteur_remplacer_references($objet, $ids_objets);
             }
 
-            return "La liste n'est pas valide : $references_manquantes";
+            return _T('objecteur:erreur_liste_invalide',
+                      array('err' => $references_manquantes));
         }
     }
 
@@ -478,7 +498,8 @@ function objecteur_effacer_resoudre_references ($liste_objets) {
                 if ($id_objet = objecteur_trouver($objet)) {
                     $ids_objets[$objet['options']['nom']] = $id_objet;
                 } else {
-                    return "objet introuvable\n" . var_export($objet, TRUE);
+                    return _T('objecteur:erreur_objet_introuvable',
+                              array('objet' => var_export($objet, TRUE)));
                 }
                 $liste_resolue[$index] = $objet;
                 unset($liste_objets[$index]);
@@ -494,7 +515,8 @@ function objecteur_effacer_resoudre_references ($liste_objets) {
                 $references_manquantes .= "\n - " . objecteur_remplacer_references($objet, $ids_objets);
             }
 
-            return "La liste n'est pas valide : $references_manquantes";
+            return _T('objecteur:erreur_liste_invalide',
+                      array('err' => $references_manquantes));
         }
     }
 
@@ -517,7 +539,9 @@ function objecteur_valider_liste ($liste_objets) {
         if ( ! in_array($objet['options']['nom'], $noms_objets)) {
             $noms_objets[] = $objet['options']['nom'];
         } else {
-            return "Liste invalide : Le nom '" . $objet['options']['nom'] . "' est défini plusieurs fois !";
+            return _T('objecteur:erreur_liste_invalide',
+                      array('err' => _T('objecteur:erreur_doublon_nom',
+                                        array('nom' => $objet['options']['nom']))));
         }
     }
 }
@@ -572,7 +596,8 @@ function objecteur_remplacer_references ($objet, $ids_objets) {
             if (array_key_exists($reference, $ids_objets)) {
                 $objet['options'][$cle] = $ids_objets[$reference];
             } else {
-                return "référence manquante : $reference";
+                return _T('objecteur:erreur_reference_manquante',
+                          array('reference' => $reference));
             }
         }
     }

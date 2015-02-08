@@ -60,8 +60,11 @@ function essais_objecteur_ordonner_liste(){
 
         "Les listes invalides sont invalides" =>
         array (
-            'La liste n\'est pas valide : 
- - référence manquante : rubrique_agenda',
+            _T('objecteur:erreur_liste_invalide',
+               array(
+                   'err' => '
+ - référence manquante : rubrique_agenda',)),
+
             array(
                 array (
                     'objet' => 'rubrique',
@@ -110,9 +113,11 @@ function essais_objecteur_ordonner_liste(){
 
         "On n'accepte pas les références circulaires" =>
         array (
-            'La liste n\'est pas valide : 
+            _T('objecteur:erreur_liste_invalide',
+               array(
+                   'err' => '
  - référence manquante : rubrique_agenda
- - référence manquante : rubrique_accueil',
+ - référence manquante : rubrique_accueil',)),
 
             array(
                 array (

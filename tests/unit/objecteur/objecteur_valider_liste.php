@@ -66,7 +66,10 @@ function essais_objecteur_valider_liste(){
 
         "On ne peut pas donner plusieurs fois le même nom" =>
         array (
-            'Liste invalide : Le nom \'nouvel_article\' est défini plusieurs fois !',
+            _T('objecteur:erreur_liste_invalide',
+               array('err' => _T('objecteur:erreur_doublon_nom',
+                                 array('nom' => 'nouvel_article')))),
+
             array(
                 array (
                     'objet' => 'article',

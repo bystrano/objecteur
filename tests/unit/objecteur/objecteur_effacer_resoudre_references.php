@@ -111,8 +111,11 @@ function essais_objecteur_effacer_resoudre_references(){
 
         "Les listes invalides sont invalides" =>
         array (
-            'La liste n\'est pas valide : 
- - référence manquante : rubrique_agenda',
+            _T('objecteur:erreur_liste_invalide',
+               array(
+                   'err' => '
+ - référence manquante : rubrique_agenda',)),
+
             array(
                 array (
                     'objet' => 'rubrique',
@@ -166,9 +169,11 @@ function essais_objecteur_effacer_resoudre_references(){
 
         "On n'accepte pas les références circulaires" =>
         array (
-            'La liste n\'est pas valide : 
+            _T('objecteur:erreur_liste_invalide',
+               array(
+                   'err' => '
  - référence manquante : rubrique_agenda_4
- - référence manquante : rubrique_accueil_4',
+ - référence manquante : rubrique_accueil_4',)),
 
             array(
                 array (
