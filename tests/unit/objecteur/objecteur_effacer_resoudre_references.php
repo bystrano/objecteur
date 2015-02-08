@@ -25,20 +25,53 @@ if (!function_exists($f='objecteur_effacer_resoudre_references')){
 // On doit préparer des objets en base pour chaque test, sinon la
 // fonction ne trouvera jamais rien
 $objecteur = charger_fonction('objecteur', 'inc');
-$ids_objets = array();
-foreach (essais_objecteur_effacer_resoudre_references() as $essai) {
 
-    $ids = $objecteur($essai[1]);
+$objets_temporaires = array(
+    array (
+        'objet' => 'rubrique',
+        'options' => array(
+            'nom' => 'rubrique_accueil_1',
+            'titre' => 'Accueil',
+        ),
+    ),
 
-    if ( ! is_string($ids)) {
-        $ids_objets = array_merge($ids_objets, $ids);
-    }
+    array (
+        'objet' => 'rubrique',
+        'options' => array(
+            'nom' => 'rubrique_bxl_3',
+            'titre' => 'Région BXL',
+            'id_parent' => '@rubrique_agenda_3@',
+        ),
+    ),
+    array(
+        'objet' => 'rubrique',
+        'options' => array(
+            'nom' => 'rubrique_agenda_3',
+            'titre' => "Calendrier",
+        ),
+    ),
+
+);
+
+$ids_objets_temporaires = $objecteur($objets_temporaires);
+
+if (is_string($ids)) {
+    die("Impossible de créer les objets temporaires $ids");
 }
+
 
 //
 // hop ! on y va
 //
 $err = tester_fun($f, essais_objecteur_effacer_resoudre_references());
+
+// On efface les objets qui ont été créés pour les tests
+$objecteur_effacer = charger_fonction('objecteur_effacer', 'inc');
+
+if ($erreur = $objecteur_effacer($objets_temporaires)) {
+    echo "$erreur<br>";
+}
+
 
 // si le tableau $err est pas vide ca va pas
 if ($err) {
@@ -50,7 +83,7 @@ echo "OK";
 
 function essais_objecteur_effacer_resoudre_references(){
 
-    global $ids_objets;
+    global $ids_objets_temporaires;
 
     $essais = array (
         "Les listes valides sont valides" =>
@@ -59,7 +92,7 @@ function essais_objecteur_effacer_resoudre_references(){
                 array (
                     'objet' => 'rubrique',
                     'options' => array(
-                        'nom' => 'rubrique_accueil',
+                        'nom' => 'rubrique_accueil_1',
                         'titre' => 'Accueil',
                     ),
                 ),
@@ -69,7 +102,7 @@ function essais_objecteur_effacer_resoudre_references(){
                 array (
                     'objet' => 'rubrique',
                     'options' => array(
-                        'nom' => 'rubrique_accueil',
+                        'nom' => 'rubrique_accueil_1',
                         'titre' => 'Accueil',
                     ),
                 ),
@@ -84,7 +117,7 @@ function essais_objecteur_effacer_resoudre_references(){
                 array (
                     'objet' => 'rubrique',
                     'options' => array(
-                        'nom' => 'rubrique_accueil',
+                        'nom' => 'rubrique_accueil_2',
                         'titre' => 'Accueil',
                         'id_parent' => '@rubrique_agenda@',
                     ),
@@ -98,15 +131,15 @@ function essais_objecteur_effacer_resoudre_references(){
                 array (
                     'objet' => 'rubrique',
                     'options' => array(
-                        'nom' => 'rubrique_accueil',
-                        'id_parent' => $ids_objets['rubrique_agenda'],
-                        'titre' => 'Accueil',
+                        'nom' => 'rubrique_bxl_3',
+                        'id_parent' => $ids_objets_temporaires['rubrique_agenda_3'],
+                        'titre' => 'Région BXL',
                     ),
                 ),
                 array(
                     'objet' => 'rubrique',
                     'options' => array(
-                        'nom' => 'rubrique_agenda',
+                        'nom' => 'rubrique_agenda_3',
                         'titre' => "Calendrier",
                     ),
                 ),
@@ -116,15 +149,15 @@ function essais_objecteur_effacer_resoudre_references(){
                 array (
                     'objet' => 'rubrique',
                     'options' => array(
-                        'nom' => 'rubrique_accueil',
-                        'titre' => 'Accueil',
-                        'id_parent' => '@rubrique_agenda@',
+                        'nom' => 'rubrique_bxl_3',
+                        'titre' => 'Région BXL',
+                        'id_parent' => '@rubrique_agenda_3@',
                     ),
                 ),
                 array(
                     'objet' => 'rubrique',
                     'options' => array(
-                        'nom' => 'rubrique_agenda',
+                        'nom' => 'rubrique_agenda_3',
                         'titre' => "Calendrier",
                     ),
                 ),
@@ -134,24 +167,24 @@ function essais_objecteur_effacer_resoudre_references(){
         "On n'accepte pas les références circulaires" =>
         array (
             'La liste n\'est pas valide : 
- - référence manquante : rubrique_agenda
- - référence manquante : rubrique_accueil',
+ - référence manquante : rubrique_agenda_4
+ - référence manquante : rubrique_accueil_4',
 
             array(
                 array (
                     'objet' => 'rubrique',
                     'options' => array(
-                        'nom' => 'rubrique_accueil',
+                        'nom' => 'rubrique_accueil_4',
                         'titre' => 'Accueil',
-                        'id_parent' => '@rubrique_agenda@',
+                        'id_parent' => '@rubrique_agenda_4@',
                     ),
                 ),
                 array(
                     'objet' => 'rubrique',
                     'options' => array(
-                        'nom' => 'rubrique_agenda',
+                        'nom' => 'rubrique_agenda_4',
                         'titre' => "Calendrier",
-                        'id_parent' => '@rubrique_accueil@',
+                        'id_parent' => '@rubrique_accueil_4@',
                     ),
                 ),
             ),
