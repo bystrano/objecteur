@@ -7,6 +7,8 @@
  * le 2015-02-07 13:32
  */
 
+header('Content-Type: text/html; charset=UTF-8');
+
 $test = 'objecteur_valider_definition';
 $remonte = "../";
 while (!is_dir($remonte."ecrire"))
@@ -34,27 +36,28 @@ echo "OK";
 
 
 function essais_objecteur_valider_definition(){
-		$essais = array (
-  0 => 
-  array (
-    0 => 'La définition de l\'objet doit être un tableau !
+    $essais = array (
+        "Les strings ne sont pas acceptés" =>
+        array (
+            'La définition de l\'objet doit être un tableau !
 \'hello\'',
-    1 => 'hello',
-  ),
-  1 => 
-  array (
-    0 => 'La définition de l\'objet n\'as pas de clé \'options\'
+            'hello',
+        ),
+
+        "La clé options est obligatoire" =>
+        array (
+            'La définition de l\'objet n\'as pas de clé \'options\'
 array (
   \'objet\' => \'rubrique\',
 )',
-    1 => 
-    array (
-      'objet' => 'rubrique',
-    ),
-  ),
-  2 => 
-  array (
-    0 => 'bloubliboulga n\'est pas une option valide
+            array (
+                'objet' => 'rubrique',
+            ),
+        ),
+
+        "Les options ne peuvent pas être n'importe quoi" =>
+        array (
+            'bloubliboulga n\'est pas une option valide
 array (
   \'objet\' => \'article\',
   \'options\' => 
@@ -62,47 +65,30 @@ array (
     \'bloubliboulga\' => \'au plus vite\',
   ),
 )',
-    1 => 
-    array (
-      'objet' => 'article',
-      'options' => 
-      array (
-        'bloubliboulga' => 'au plus vite',
-      ),
-    ),
-  ),
-  3 => 
-  array (
-    0 => NULL,
-    1 => 
-    array (
-      'objet' => 'article',
-      'options' => 
-      array (
-        'titre' => 'un nouvel article',
-        'nom' => 'nouvel_article',
-        'lang' => 'fr',
-        'id_trad' => 'hello',
-      ),
-    ),
-  ),
-);
-		return $essais;
-	}
+        array (
+            'objet' => 'article',
+            'options' =>
+                array (
+                    'bloubliboulga' => 'au plus vite',
+                ),
+            ),
+        ),
 
+        "les objets valides sont valides" =>
+        array (
+            NULL,
+            array (
+                'objet' => 'article',
+                'options' =>
+                array (
+                    'titre' => 'un nouvel article',
+                    'nom' => 'nouvel_article',
+                    'lang' => 'fr',
+                    'statut' => 'publie',
+                ),
+            ),
+        ),
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-?>
+    );
+    return $essais;
+}
