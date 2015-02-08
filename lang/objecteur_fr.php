@@ -21,9 +21,6 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
     'erreur_suppression_non_autorisee' => "supprimer @objet@ @id_objet@ : action non autorisée",
     'erreur_suppression_objet_introuvable' => "suppression impossible, objet introuvable :\n@objet@",
 
-    // L
-    'log_definition_invalide' => "objecteur: définition de l'objet invalide : @err@",
-
     // O
     'objecteur_titre' => 'Objecteur',
 );

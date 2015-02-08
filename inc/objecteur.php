@@ -80,10 +80,6 @@ function inc_objecteur_dist ($objets, $forcer_creation=FALSE) {
 
         if ($err = objecteur_valider_definition($objet)) {
 
-            spip_log(_T('objecteur:log_definition_invalide',
-                        array('err' => $err)),
-                     _LOG_ERREUR);
-
             return _T('objecteur:erreur_definition_invalide',
                       array('err' => $err));
         }
@@ -143,10 +139,6 @@ function inc_objecteur_effacer_dist ($objets) {
     foreach ($objets as $objet) {
 
         if ($err = objecteur_valider_definition($objet)) {
-
-            spip_log(_T('objecteur:log_definition_invalide',
-                        array('err' => $err)),
-                     _LOG_ERREUR);
 
             return _T('objecteur:erreur_definition_invalide',
                       array('err' => $err));
