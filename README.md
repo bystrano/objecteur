@@ -45,8 +45,7 @@ $objecteur(array(
 
 S'il y a déjà des objets éditoriaux qui correspondent aux définitions, on ne crée pas de nouveaux objets.
 Dans tous les cas, la fonction retourne un tableau d'identifiants des objets en question, indexés par leurs noms.
-Les identifiants des objets qui n'ont pas défini d'option `nom` sont indexés par ordre de création.
-Sur un SPIP fraîchement installé, l'exemple ci-dessus retournerait donc :
+Sur un SPIP fraîchement installé, l'exemple ci-dessus retournerait :
 
 ```php
 array(
@@ -74,8 +73,8 @@ $objecteur(
 
 Ainsi, chaque appel créera un nouvel article.
 
-`objecteur_effacer`
--------------------
+La fonction `objecteur_effacer`
+-------------------------------
 
 La fonction `objecteur_effacer` sert à supprimer des objets éditoriaux.
 On l'utilise comme la fonction `objecteur` :
@@ -100,17 +99,41 @@ Les définitions d'objets
 
 Une définition d'objet est un tableau qui définit un ou plusieurs objets éditoriaux à créer ou supprimer.
 
-Pour être valide, une définition d'objet _doit_ posséder une clé `objet`, dont la valeur _doit_ être un nom d'objet éditorial valide.
-Elle _doit_ aussi avoir une clé `options`, qui _doit_ être un tableau.
-Les clés de ce tableau d'options _doivent_ être soit `nom`, soit `id_parent`, soit des noms de champs de la table SQL correspondant au type d'objet éditorial donné par la clé `objet` de la définition.
+Un définition d'objet valide est un tableau avec une clé `objet`, dont la valeur est un nom d'objet éditorial valide.
+Ce tableau doit aussi avoir une clé `options`, un tableau dont les clés sont soit `nom`, soit `id_parent`, soit des noms de champs de la table SQL correspondant à la clé `objet`.
+
+### Les références par nom ###
 
 L'option `nom` permet de définir un identifiant pour l'objet qui sera créé ou retourné.
 Cet identifiant sera utilisé comme clé dans le tableau des `id_objets` retournés par la fonction `objecteur`.
-`TODO` On pourra aussi s'en servir pour créer des liens de traduction entre les objets crées par l'objecteur.
 
-L'option `id_parent` _peut_ donner un `id_objet` d'objet parent.
+On pourra aussi s'en servir pour utilier l'identifiant d'un objet à créer dans la définition d'un autre objet, en écrivant `@nom_objet@`.
+On peut par exemple créer des liens de traduction entre des articles crées par l'objecteur comme ça :
+
+```php
+$objecteur(array(
+    array(
+        'objet' => 'article',
+        'options' => array(
+            'nom' => 'home_fr',
+            'titre' => 'Accueil',
+        ),
+    ),
+    array(
+        'objet' => 'article',
+        'options' => array(
+            'id_trad' => '@home_fr@',
+            'titre' => 'Home',
+        ),
+    ),
+));
+```
+
+### Les hiérarchies d'objets ###
+
+L'option `id_parent` permet de définir un objet parent.
 On peux utiliser `id_parent` même si le champ SQL qui gère la parenté s'appelle autrement, il sera remplacé automatiquement par le bon nom de champ, comme `id_groupe` pour les mots-clés ou `id_rubrique` pour les articles.
 
-Chaque définition d'objet _peut_ aussi avoir une clé `enfants`, qui permet de définir une arborescence d'objets éditoriaux.
-Sa valeur doit être soit une définition, soit une liste de définitions d'objet éditoriaux.
+Chaque définition d'objet peut aussi avoir une clé `enfants`, qui permet de définir une arborescence d'objets éditoriaux.
+Sa valeur est soit une définition, soit une liste de définitions d'objet éditoriaux.
 Si on a défini des options `id_parent` pour les objets éditoriaux enfants, ces options seront ignorées.
