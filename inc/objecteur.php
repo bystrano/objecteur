@@ -523,6 +523,28 @@ function objecteur_valider_liste ($liste_objets) {
 }
 
 /**
+ * Élimine les doublons dans une liste d'objets
+ *
+ * Description longue
+ *
+ * @param array $liste_objets : La liste d'objets
+ *
+ * @return array : La liste sans les doublons
+ */
+function objecteur_dedoublonner_liste ($liste_objets) {
+
+    $liste_filtree = array();
+
+    foreach ($liste_objets as $objet) {
+        if ( ! in_array($objet, $liste_filtree)) {
+            $liste_filtree[] = $objet;
+        }
+    }
+
+    return $liste_filtree;
+}
+
+/**
  * Remplacer les références à des objets existants par leurs
  * identifiants dans la définition d'un objet
  *
