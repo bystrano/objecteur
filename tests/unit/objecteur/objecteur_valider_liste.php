@@ -94,6 +94,28 @@ function essais_objecteur_valider_liste(){
             ),
         ),
 
+        "On peut avoir plusieurs objets sans nom" =>
+        array (
+            NULL,
+            array(
+                array (
+                    'objet' => 'article',
+                    'options' =>
+                    array (
+                        'titre' => 'un article sans nom',
+                    ),
+                ),
+                array (
+                    'objet' => 'article',
+                    'options' =>
+                    array (
+                        'titre' => 'un autre article sans nom',
+                    ),
+                ),
+            ),
+        ),
+
+
     );
     return $essais;
 }

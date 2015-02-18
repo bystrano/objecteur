@@ -408,6 +408,9 @@ function objecteur_valider_liste ($liste_objets) {
     /* On teste l'unicité des noms */
     $noms_objets = array();
     foreach ($liste_objets as $objet) {
+
+        if ( ! $objet['options']['nom']) continue;
+
         if ( ! in_array($objet['options']['nom'], $noms_objets)) {
             $noms_objets[] = $objet['options']['nom'];
         } else {
