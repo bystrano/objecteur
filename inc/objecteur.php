@@ -106,7 +106,11 @@ function inc_objecteur_dist ($objets, $forcer_creation=FALSE) {
 
         $id_objet = objecteur_creer_objet($objet, $forcer_creation);
 
-        $ids_objets[$objet['options']['nom']] = $id_objet;
+        if ($objet['options']['nom']) {
+            $ids_objets[$objet['options']['nom']] = $id_objet;
+        } else {
+            $ids_objets[] = $id_objet;
+        }
     }
 
     return $ids_objets;
