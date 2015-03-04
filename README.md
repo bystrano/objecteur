@@ -137,3 +137,39 @@ On peux utiliser `id_parent` même si le champ SQL qui gère la parenté s'appel
 Chaque définition d'objet peut aussi avoir une clé `enfants`, qui permet de définir une arborescence d'objets éditoriaux.
 Sa valeur est soit une définition, soit une liste de définitions d'objet éditoriaux.
 Si on a défini des options `id_parent` pour les objets éditoriaux enfants, ces options seront ignorées.
+
+### La gestion des logo et documents ###
+
+L'option `logo` permet de définir une URL ou un chemin vers une image qui servira de logo à un objet SPIP
+
+```php
+$objecteur(array(
+    array(
+        'objet' => 'article',
+        'options' => array(
+            'nom' => 'home_fr',
+            'titre' => 'Accueil',
+            'logo' => "http://[...]")
+        ),
+    )
+);
+```
+
+L'option `documents` est un tableau qui défini les documents à lié à l'objet:
+
+```php
+$objecteur(array(
+    array(
+        'objet' => 'article',
+        'options' => array(
+            'nom' => 'home_fr',
+            'titre' => 'Accueil',
+            'documents' => array(
+                'http://[...]',
+                'http://[...]',
+                'http://[...]')
+            )
+        ),
+    )
+);
+```
