@@ -614,7 +614,7 @@ function objecteur_ajouter_logo($objet, $id_objet, $logo) {
     include_spip('inc/distant');
     $logo_chemin = copie_locale($logo, 'force');
 
-    ajouter_logo($objet, $id_objet, $logo_chemin);
+    ajouter_logo($objet, $id_objet, _DIR_RACINE.$logo_chemin);
 }
 
 /**

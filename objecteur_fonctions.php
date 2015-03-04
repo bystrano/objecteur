@@ -92,7 +92,7 @@ if (!function_exists('ajouter_logo')) {
         include_spip('action/editer_logo');
         // Version SPIP 3.1 de cette fonction:
         if (function_exists('logo_modifier'))
-            return logo_modifier($objet, $id_objet, 'on', _DIR_RACINE.$fichier);
+            return logo_modifier($objet, $id_objet, 'on', $fichier);
 
         include_spip('action/iconifier');
         $chercher_logo = charger_fonction('chercher_logo','inc');
