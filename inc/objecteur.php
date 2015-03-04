@@ -606,6 +606,17 @@ function objecteur_remplacer_references ($objet, $ids_objets) {
     return $objet;
 }
 
+function objecteur_ajouter_logo($objet, $id_objet, $logo) {
+
+    include_spip('objecteur_fonction');
+
+    // On va commencer par faire une copie local du logo, afin de toujours savoir travaille dessus.
+    include_spip('inc/distant');
+    $logo_chemin = copie_locale($logo, 'force');
+
+    ajouter_logo($objet, $id_objet, $logo_chemin);
+}
+
 /**
  * Créer un nouvel objet
  *
