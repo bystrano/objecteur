@@ -67,7 +67,7 @@ function maj_meta ($nom_meta, $cle, $valeur=NULL) {
  * @param string $type    : Nom de l'objet
  *
  * @return string : Nom de la clé primaire
-**/
+ **/
 function id_parent_objet ($type) {
 
     if (isset($GLOBALS['id_parents_objets'][$type])) {
@@ -75,6 +75,9 @@ function id_parent_objet ($type) {
     } else {
         return '';
     }
+}
+
+/**
  * Ajouter un logo à un objet SPIP
  * On peu passer directement un file Path ou un $_FILE[input_name] à $fichier
  *
@@ -114,6 +117,7 @@ if (!function_exists('ajouter_logo')) {
             return true;
     }
 }
+
 /**
  * Uploader et lier des documents à un objet SPIP
  *
