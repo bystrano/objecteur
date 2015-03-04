@@ -198,6 +198,7 @@ function objecteur_trouver ($def_objet) {
 
     if (isset($def_objet['options']['nom'])) {
         unset($def_objet['options']['nom']);
+        unset($def_objet['options']['logo']);
     }
 
     return intval(sql_getfetsel(
