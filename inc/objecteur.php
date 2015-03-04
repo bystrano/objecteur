@@ -617,6 +617,18 @@ function objecteur_ajouter_logo($objet, $id_objet, $logo) {
     ajouter_logo($objet, $id_objet, _DIR_RACINE.$logo_chemin);
 }
 
+function objecteur_ajouter_documents($objet, $id_objet, $files) {
+    include_spip('inc/distant');
+
+    $documents = array();
+    foreach($files as $file) {
+        $documents[] = array('name' => $file, 'tmp_name' => $file);
+    }
+
+    // Ajouter les documents
+    uploader_document($documents, $objet, $id_objet);
+}
+
 /**
  * Créer un nouvel objet
  *
@@ -687,6 +699,10 @@ function objecteur_creer_objet ($def_objet, $forcer_creation) {
         // On s'occupe du logo
         if ($options['logo'])
             objecteur_ajouter_logo($type_objet, $id_objet, $options['logo']);
+
+        // On s'occupe des documents à ajouter
+        if ($options['documents'])
+            objecteur_ajouter_documents($type_objet, $id_objet, $options['documents']);
     }
 
     return $id_objet;
