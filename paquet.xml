@@ -3,7 +3,7 @@
   categorie="outil"
   version="0.2.0"
   etat="dev"
-  compatibilite="[3.0.17;3.0.*]"
+  compatibilite="[3.0.17;3.1.*]"
   logo=""
   documentation=""
 >
