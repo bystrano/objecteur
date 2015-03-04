@@ -16,7 +16,6 @@ if (!defined('_ECRIRE_INC_VERSION')) return;
 // automatiques.
 $GLOBALS['objecteur_white_list'] = array(
     'nom',
-    'id_parent',
     'logo',
     'documents'
 );
@@ -208,9 +207,7 @@ function objecteur_trouver ($def_objet) {
 
     // On ne construit aucune requête SQL avec un élément de la white liste
     foreach($GLOBALS['objecteur_white_list'] as $element) {
-        // On fait une exception pour id_parent
-        if ($element != 'id_parent')
-            unset($def_objet['options'][$element]);
+        unset($def_objet['options'][$element]);
     }
 
     return intval(sql_getfetsel(
@@ -263,9 +260,10 @@ function objecteur_valider_definition ($def_objet) {
     $champs_table = array_keys($desc_table['field']);
 
     foreach ($options as $cle => $valeur) {
-        /* Les options peuvent être dans la white_list, ou un champ de
-           la table du type d'objet en question */
+        /* Les options peuvent être dans la white_list, id_parent
+           ou un champ de la table du type d'objet en question */
         if ( (!in_array($cle, $GLOBALS['objecteur_white_list']))
+            AND ($cle !== 'id_parent') // L'id_parent n'est pas dans la white liste
             AND ( ! in_array($cle, $champs_table))) {
 
             return _T('objecteur:erreur_definition_cle_invalide',
