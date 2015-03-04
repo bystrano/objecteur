@@ -683,6 +683,10 @@ function objecteur_creer_objet ($def_objet, $forcer_creation) {
             $referencer_traduction = charger_fonction('referencer_traduction','action');
             $referencer_traduction($type_objet, $id_objet,$id_trad);
         }
+
+        // On s'occupe du logo
+        if ($options['logo'])
+            objecteur_ajouter_logo($type_objet, $id_objet, $options['logo']);
     }
 
     return $id_objet;
