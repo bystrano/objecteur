@@ -75,4 +75,43 @@ function id_parent_objet ($type) {
     } else {
         return '';
     }
+ * Ajouter un logo à un objet SPIP
+ * On peu passer directement un file Path ou un $_FILE[input_name] à $fichier
+ *
+ * @param mixed $objet
+ * @param mixed $id_objet
+ * @param mixed $fichier
+ * @access public
+ * @return mixed
+ */
+if (!function_exists('ajouter_logo')) {
+    function ajouter_logo($objet, $id_objet, $fichier) {
+        include_spip('action/editer_logo');
+        // Version SPIP 3.1 de cette fonction:
+        if (function_exists('logo_modifier'))
+            return logo_modifier($objet, $id_objet, 'on', _DIR_RACINE.$fichier);
+
+        include_spip('action/iconifier');
+        $chercher_logo = charger_fonction('chercher_logo','inc');
+        $ajouter_image = charger_fonction('spip_image_ajouter','action');
+
+        $type = type_du_logo(id_table_objet($objet));
+        $logo = $chercher_logo($id_objet, id_table_objet($objet));
+
+        if ($logo)
+            spip_unlink($logo[0]);
+
+        // Dans le cas d'un tableau, on présume que c'est un $_FILES et on passe directement
+        if (is_array($fichier))
+            $err = $ajouter_image($type."on".$id_objet," ", $fichier, true);
+        else
+            // Sinon, on caviarde la fonction ajouter_image
+            $err = $ajouter_image($type."on".$id_objet," ", array('tmp_name' => $fichier), true);
+
+        if ($err)
+            return $err;
+        else
+            return true;
+    }
+}
 }
