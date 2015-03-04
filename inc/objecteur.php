@@ -11,6 +11,16 @@
 if (!defined('_ECRIRE_INC_VERSION')) return;
 
 
+// utiliser une globale pour se rappeler des éléments technique
+// c'est éléments ne doivent pas subir un certain nombre de traitements
+// automatiques.
+$GLOBALS['objecteur_white_list'] = array(
+    'nom',
+    'id_parent',
+    'logo',
+    'documents'
+);
+
 /**
  * Créer ou retrouver des objets
  *
@@ -196,9 +206,11 @@ function objecteur_trouver ($def_objet) {
 
     include_spip('base/abstract_sql');
 
-    if (isset($def_objet['options']['nom'])) {
-        unset($def_objet['options']['nom']);
-        unset($def_objet['options']['logo']);
+    // On ne construit aucune requête SQL avec un élément de la white liste
+    foreach($GLOBALS['objecteur_white_list'] as $element) {
+        // On fait une exception pour id_parent
+        if ($element != 'id_parent')
+            unset($def_objet['options'][$element]);
     }
 
     return intval(sql_getfetsel(
@@ -250,12 +262,10 @@ function objecteur_valider_definition ($def_objet) {
     $desc_table = description_table(table_objet_sql($type_objet));
     $champs_table = array_keys($desc_table['field']);
 
-    $white_list = array('nom', 'id_parent', 'logo');
-
     foreach ($options as $cle => $valeur) {
         /* Les options peuvent être dans la white_list, ou un champ de
            la table du type d'objet en question */
-        if ( (!in_array($cle, $white_list))
+        if ( (!in_array($cle, $GLOBALS['objecteur_white_list']))
             AND ( ! in_array($cle, $champs_table))) {
 
             return _T('objecteur:erreur_definition_cle_invalide',
@@ -592,7 +602,8 @@ function objecteur_effacer_resoudre_references ($liste_objets) {
 function objecteur_remplacer_references ($objet, $ids_objets) {
 
     foreach ($objet['options'] as $cle => $valeur) {
-        if (($cle !== 'nom') AND (preg_match('/^@.*@$/', $valeur) === 1)) {
+        if (!in_array($cle, $GLOBALS['objecteur_white_list'])
+            AND (preg_match('/^@.*@$/', $valeur) === 1)) {
             $reference = trim($valeur, '@');
             if (array_key_exists($reference, $ids_objets)) {
                 $objet['options'][$cle] = $ids_objets[$reference];
