@@ -249,11 +249,12 @@ function objecteur_valider_definition ($def_objet) {
     $desc_table = description_table(table_objet_sql($type_objet));
     $champs_table = array_keys($desc_table['field']);
 
+    $white_list = array('nom', 'id_parent', 'logo');
+
     foreach ($options as $cle => $valeur) {
-        /* Les options peuvent être 'nom', 'id_parent', ou un champ de
+        /* Les options peuvent être dans la white_list, ou un champ de
            la table du type d'objet en question */
-        if (($cle !== 'nom')
-            AND ($cle !== 'id_parent')
+        if ( (!in_array($cle, $white_list))
             AND ( ! in_array($cle, $champs_table))) {
 
             return _T('objecteur:erreur_definition_cle_invalide',
