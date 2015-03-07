@@ -10,16 +10,6 @@
 
 if (!defined('_ECRIRE_INC_VERSION')) return;
 
-
-// utiliser une globale pour se rappeler des éléments technique
-// c'est éléments ne doivent pas subir un certain nombre de traitements
-// automatiques.
-$GLOBALS['objecteur_white_list'] = array(
-    'nom',
-    'logo',
-    'documents'
-);
-
 /**
  * Créer ou retrouver des objets
  *

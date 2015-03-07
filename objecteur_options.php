@@ -11,6 +11,15 @@
 
 if (!defined('_ECRIRE_INC_VERSION')) return;
 
+// Utiliser une globale pour se rappeler des éléments technique
+// Ces éléments ne doivent pas subir un certain nombre de traitements
+// automatiques.
+$GLOBALS['objecteur_white_list'] = array(
+    'nom',
+    'logo',
+    'documents'
+);
+
 /* Un tableau donnant les clés d'objets parents pour chaque objet
    éditorial. Ce tableau est utilisé par la fonction id_parent_objet,
    et permet de définir comment seront créés les hiérarchies
