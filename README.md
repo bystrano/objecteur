@@ -137,3 +137,17 @@ On peux utiliser `id_parent` même si le champ SQL qui gère la parenté s'appel
 Chaque définition d'objet peut aussi avoir une clé `enfants`, qui permet de définir une arborescence d'objets éditoriaux.
 Sa valeur est soit une définition, soit une liste de définitions d'objet éditoriaux.
 Si on a défini des options `id_parent` pour les objets éditoriaux enfants, ces options seront ignorées.
+
+#### Le cas des objets éditoriaux ajoutés par des plugins ####
+
+Quand un plugin définit un nouvel objet éditorial, SPIP ne permet pas de spécifier la parenté entre les objets.
+Par exemple, un objet éditorial "Livre" qui a un champ `id_rubrique` ne peut pas annoncer via l'API que chaque livre doit être associé à une rubrique, qui sera alors considérée comme parente.
+Le plugin Objecteur a pourtant besoin de savoir quel est le type d'objet parent quand on lui demande de créer un livre avec un `id_parent`.
+
+C'est pourquoi on a créé une globale qui permet de définir les associations de parenté entre les objets éditoriaux.
+Cette globale, `id_parents_objets`, est définie dans le fichier `objecteur_options.php`, et les autres plugins peuvent la compléter selon leurs besoins.
+Le plugin Livres pourra alors associer les Livres avec les rubriques de la manière suivante :
+
+```php
+$GLOBALS['id_parents_objets']['livres'] = 'id_rubrique';
+```
