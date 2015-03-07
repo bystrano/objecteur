@@ -624,8 +624,15 @@ function objecteur_ajouter_documents($objet, $id_objet, $files) {
         $documents[] = array('name' => $file, 'tmp_name' => $file);
     }
 
-    // Ajouter les documents
-    uploader_document($documents, $objet, $id_objet);
+    // On ajoute les documents à un objet SPIP.
+    $ajouter_documents = charger_fonction('ajouter_documents','action');
+    $ajouter_documents(
+        'new',
+        $documents,
+        $objet, // Article, rubrique, autre objet spip
+        $id_objet,
+        'document'
+    );
 }
 
 /**
