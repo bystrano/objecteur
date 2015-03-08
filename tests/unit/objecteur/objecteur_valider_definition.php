@@ -91,6 +91,40 @@ function essais_objecteur_valider_definition(){
             ),
         ),
 
+        "la clé 'fichier' est obligatoire pour les documents" =>
+        array (
+            _T('objecteur:erreur_option_manquante', array(
+                'option' => 'fichier',
+                'objet' => "array (
+  'objet' => 'document',
+  'options' => 
+  array (
+    'titre' => 'un nouveau document',
+  ),
+)",
+            )),
+            array (
+                'objet' => 'document',
+                'options' =>
+                array (
+                    'titre' => 'un nouveau document',
+                ),
+            ),
+        ),
+
+        "la clé 'fichier' est obligatoire pour les documents 2" =>
+        array (
+            NULL,
+            array (
+                'objet' => 'document',
+                'options' =>
+                array (
+                    'titre' => 'un nouveau document',
+                    'fichier' => '/chemin/vers/fichier',
+                ),
+            ),
+        ),
+
     );
     return $essais;
 }

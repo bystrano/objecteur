@@ -264,6 +264,17 @@ function objecteur_valider_definition ($def_objet) {
         }
     }
 
+    /* les documents nécessitent une option fichier */
+    if (($type_objet === 'document')
+        AND ( ! isset($options['fichier']))) {
+
+        return _T('objecteur:erreur_option_manquante',
+                  array(
+                      'option' => 'fichier',
+                      'objet' => $string_objet,
+                  ));
+    }
+
     /* Si l'objet est valide, on teste récursivement les enfants */
     $enfants = isset($def_objet['enfants']) ? $def_objet['enfants'] : array();
 
