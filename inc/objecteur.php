@@ -314,8 +314,18 @@ function objecteur_calculer_liste ($objets) {
             $objet['options'][id_parent_objet($objet['objet'])] = $id_parent;
         }
 
-        /* Gestion des objets enfants */
         if (isset($objet['enfants']) AND $enfants = $objet['enfants']) {
+            unset($objet['enfants']);
+        }
+
+        if (isset($objet['documents']) AND $documents = $objet['documents']) {
+            unset($objet['documents']);
+        }
+
+        $liste_objets[] = $objet;
+
+        /* Gestion des objets enfants */
+        if ($enfants) {
 
             /* à l'image du paramètre $objets de la fonction
                objecteur, la clé enfants peut être une définition
@@ -331,6 +341,10 @@ function objecteur_calculer_liste ($objets) {
                     . $GLOBALS['objecteur_compteur'];
 
                 $GLOBALS['objecteur_compteur'] += 1;
+                /* On remplace l'objet qu'on vient de mettre dans la
+                   liste par une version nommée. */
+                array_pop($liste_objets);
+                $liste_objets[] = $objet;
             }
 
             foreach ($enfants as $i => $enfant) {
@@ -338,13 +352,33 @@ function objecteur_calculer_liste ($objets) {
             }
 
             $liste_enfants = objecteur_calculer_liste($enfants);
-
-            unset($objet['enfants']);
-            $liste_objets[] = $objet;
             $liste_objets = array_merge($liste_objets, $liste_enfants);
 
-        } else {
-            $liste_objets[] = $objet;
+        }
+
+        /* Gestion des documents */
+        if ($documents) {
+
+            /* si l'objet parent n'a pas de nom, on lui en donne un */
+            if ( ! isset($objet['options']['nom'])) {
+
+                $objet['options']['nom'] = '__' . $objet['objet'] . '-'
+                    . $GLOBALS['objecteur_compteur'];
+
+                $GLOBALS['objecteur_compteur'] += 1;
+                /* On remplace l'objet qu'on vient de mettre dans la
+                   liste par une version nommée. */
+                array_pop($liste_objets);
+                $liste_objets[] = $objet;
+            }
+
+            foreach ($documents as $i => $doc) {
+                $documents[$i]['parent_doc']['objet'] = $objet['objet'];
+                $documents[$i]['parent_doc']['id_objet'] = "@" . $objet['options']['nom'] . "@";
+            }
+
+            $liste_documents = objecteur_calculer_liste($documents);
+            $liste_objets = array_merge($liste_objets, $liste_documents);
         }
     }
 
@@ -580,7 +614,7 @@ function objecteur_effacer_resoudre_references ($liste_objets) {
  * Remplacer les références à des objets existants par leurs
  * identifiants dans la définition d'un objet
  *
- * On parcourt les options de l'objet, et on remplace les références
+ * On parcourt la définition de l'objet, et on remplace les références
  * entre des @ par l'identifiant correspondant de la liste de objets.
  *
  * @param array $objet : Une définition d'un objet. Les éventuels
@@ -598,15 +632,21 @@ function objecteur_effacer_resoudre_references ($liste_objets) {
  */
 function objecteur_remplacer_references ($objet, $ids_objets) {
 
-    foreach ($objet['options'] as $cle => $valeur) {
-        if (!in_array($cle, $GLOBALS['objecteur_white_list'])
-            AND (preg_match('/^@.*@$/', $valeur) === 1)) {
-            $reference = trim($valeur, '@');
-            if (array_key_exists($reference, $ids_objets)) {
-                $objet['options'][$cle] = $ids_objets[$reference];
-            } else {
-                return _T('objecteur:erreur_reference_manquante',
-                          array('reference' => $reference));
+    foreach ($objet as $cle_principale => $valeur_principale) {
+
+        if (is_array($valeur_principale)) {
+
+            foreach ($valeur_principale as $cle => $valeur) {
+                if (!in_array($cle, $GLOBALS['objecteur_white_list'])
+                    AND (preg_match('/^@.*@$/', $valeur) === 1)) {
+                    $reference = trim($valeur, '@');
+                    if (array_key_exists($reference, $ids_objets)) {
+                        $objet[$cle_principale][$cle] = $ids_objets[$reference];
+                    } else {
+                        return _T('objecteur:erreur_reference_manquante',
+                                  array('reference' => $reference));
+                    }
+                }
             }
         }
     }
@@ -789,9 +829,6 @@ function objecteur_creer_objet ($def_objet, $forcer_creation) {
         if (isset($options['logo']) AND $options['logo'])
             objecteur_ajouter_logo($type_objet, $id_objet, $options['logo']);
 
-        // On s'occupe des documents à ajouter
-        if (isset($def_objet['documents']) AND $def_objet['documents'])
-            objecteur_ajouter_documents($type_objet, $id_objet, $def_objet['documents']);
     }
 
     return $id_objet;

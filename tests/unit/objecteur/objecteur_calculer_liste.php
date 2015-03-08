@@ -167,6 +167,47 @@ function essais_objecteur_calculer_liste(){
             ),
         ),
 
+        "Documents liés à un objet" => array (
+            array(
+                array(
+                    'objet' => 'article',
+                    'options' => array(
+                        'nom' => 'parent',
+                        'id_rubrique' => 2,
+                    ),
+                ),
+                array(
+                    'objet' => 'document',
+                    'options' => array(
+                        'titre' => 'lorem',
+                        'fichier' => 'http://lorempixel.com/300/200/',
+                    ),
+                    'parent_doc' => array(
+                        'objet' => 'article',
+                        'id_objet' => '@parent@',
+                    ),
+                ),
+            ),
+            array (
+                array(
+                    'objet' => 'article',
+                    'options' => array(
+                        'nom' => 'parent',
+                        'id_parent' => 2,
+                    ),
+                    'documents' => array(
+                        array(
+                            'objet' => 'document',
+                            'options' => array(
+                                'titre' => 'lorem',
+                                'fichier' => 'http://lorempixel.com/300/200/',
+                            ),
+                        ),
+                    ),
+                ),
+            ),
+        ),
+
     );
 
     return $essais;

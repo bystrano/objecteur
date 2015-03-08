@@ -55,6 +55,7 @@ function essais_objecteur_remplacer_references(){
                 'id_rub' => 1,
             ),
         ),
+
         "On remplace les références" =>
         array (
             array (
@@ -75,6 +76,36 @@ function essais_objecteur_remplacer_references(){
                 'rub_hors_menu' => 42,
             ),
         ),
+
+        "On remplace les références dans les clés parent_doc" =>
+        array (
+            array (
+                'objet' => 'document',
+                'options' => array(
+                    'titre' => 'lorem',
+                    'fichier' => 'http://lorempixel.com/300/200/',
+                ),
+                'parent_doc' => array(
+                    'objet' => 'article',
+                    'id_objet' => 42,
+                ),
+            ),
+            array(
+                'objet' => 'document',
+                'options' => array(
+                    'titre' => 'lorem',
+                    'fichier' => 'http://lorempixel.com/300/200/',
+                ),
+                'parent_doc' => array(
+                    'objet' => 'article',
+                    'id_objet' => '@parent@',
+                ),
+            ),
+            array (
+                'parent' => 42,
+            ),
+        ),
+
     );
     return $essais;
 }
