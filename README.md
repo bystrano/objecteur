@@ -155,7 +155,7 @@ $objecteur(array(
 );
 ```
 
-L'option `documents` est un tableau qui défini les documents à lié à l'objet:
+La clé `documents` est un tableau qui défini les documents à lié à l'objet:
 
 ```php
 $objecteur(array(
@@ -164,14 +164,15 @@ $objecteur(array(
         'options' => array(
             'nom' => 'home_fr',
             'titre' => 'Accueil',
-            'documents' => array(
-                'http://[...]',
-                'http://[...]',
-                'http://[...]')
-            )
         ),
-    )
+        'documents' => array(
+            'http://[...]',
+            'http://[...]',
+            'http://[...]')
+        ),
+    ),
 );
+```
 
 #### Le cas des objets éditoriaux ajoutés par des plugins ####
 
