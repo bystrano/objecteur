@@ -750,7 +750,19 @@ function objecteur_creer_objet ($def_objet, $forcer_creation) {
         /* Les documents sont spéciaux, on s'en occupe à part */
         if ($type_objet == 'document') {
 
-            $id_objets = objecteur_ajouter_documents('', 0, array($options['fichier']));
+            /* S'il y a une clé parent_doc dans la définition, c'est
+               pour définir un objet parent pour le document */
+            if (isset($def_objet['parent_doc'])) {
+
+                $parent_doc = $def_objet['parent_doc'];
+                $id_objets = objecteur_ajouter_documents(
+                    $parent_doc['objet'], $parent_doc['id_objet'],
+                    array($options['fichier']));
+
+            } else {
+                $id_objets = objecteur_ajouter_documents('', 0, array($options['fichier']));
+            }
+
             $id_objet = array_shift($id_objets);
             // On évite de passer le fichier à objet_modifier
             unset($options['fichier']);
