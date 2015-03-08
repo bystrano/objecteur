@@ -174,6 +174,8 @@ $objecteur(array(
 );
 ```
 
+La clé documents peut aussi être une liste de définitions d'objets document, ce qui permet par exemple de les nommer pour retrouver leurs identifiants après création.
+
 #### Le cas des objets éditoriaux ajoutés par des plugins ####
 
 Quand un plugin définit un nouvel objet éditorial, SPIP ne permet pas de spécifier la parenté entre les objets.
@@ -194,6 +196,9 @@ TODO
 
 
 - [ ] Quid de la suppression de documents ?
-- [ ] Les documents devraient (pouvoir?) être définis comme le reste des objets
-- [ ] La création de documents devrait retourner des id_document ?
-- [ ] Quid du nommage des documents ? Si on veut retourner des id_documents il faudra s'occuper de ça.
+
+- [ ] effaceur plus malin
+
+Quand une définition correspond à plusieurs objets existants, on efface le premier qu'on trouve, ce qui n'est pas toujours ce qu'on veut et peut même causer des bugs dans certains cas. Il faudrait plutôt : 
+- retourner une erreur en cas de définition ambigue.
+- permettre de forcer la suppression de tous les objets correspondants.
