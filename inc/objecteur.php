@@ -667,6 +667,8 @@ function objecteur_creer_objet ($def_objet, $forcer_creation) {
     $type_objet = objet_type($def_objet['objet']);
     $options = $def_objet['options'];
 
+    if (isset($options['nom'])) unset($options['nom']);
+
     /* S'il y a déjà un objet correspondant à la description
        on le prend plutôt que d'en créer un nouveau */
     if ( ! $forcer_creation) {
