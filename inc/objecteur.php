@@ -607,13 +607,26 @@ function objecteur_remplacer_references ($objet, $ids_objets) {
 
 function objecteur_ajouter_logo($objet, $id_objet, $logo) {
 
-    include_spip('objecteur_fonction');
-
-    // On va commencer par faire une copie local du logo, afin de toujours savoir travaille dessus.
+    // On va commencer par faire une copie local du logo
     include_spip('inc/distant');
     $logo_chemin = copie_locale($logo, 'force');
 
-    ajouter_logo($objet, $id_objet, _DIR_RACINE.$logo_chemin);
+    // Dans le cas de SPIP 3.1 on utilise la fonction qui va bien
+    if (include_spip('action/editer_logo'))
+        return logo_modifier($objet, $id_objet, 'on', _DIR_RACINE.$logo_chemin);
+
+    // Si on est en SPIP 3.0 on délègue à la fonction ajouter_image
+    include_spip('action/iconifier');
+    $chercher_logo = charger_fonction('chercher_logo','inc');
+    $ajouter_image = charger_fonction('spip_image_ajouter','action');
+
+    $type = type_du_logo(id_table_objet($objet));
+    $logo = $chercher_logo($id_objet, id_table_objet($objet));
+
+    if ($logo)
+        spip_unlink($logo[0]);
+
+    return $ajouter_image($type."on".$id_objet," ", array('tmp_name' => _DIR_RACINE.$logo_chemin), true);
 }
 
 function objecteur_ajouter_documents($objet, $id_objet, $files) {
