@@ -17,6 +17,7 @@ if (!defined('_ECRIRE_INC_VERSION')) return;
 $GLOBALS['objecteur_white_list'] = array(
     'nom',
     'logo',
+    'fichier',
 );
 
 /* Un tableau donnant les clés d'objets parents pour chaque objet

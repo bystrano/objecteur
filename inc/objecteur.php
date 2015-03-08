@@ -648,7 +648,7 @@ function objecteur_ajouter_logo($objet, $id_objet, $logo) {
  * @param array $files      : Une liste de fichiers pour les ou les
  *                            documents. Chemin ou une adresse http://
  *
- * @return null
+ * @return Les identifiants des documents créés
  */
 function objecteur_ajouter_documents($objet, $id_objet, $files) {
     include_spip('inc/distant');
@@ -673,7 +673,7 @@ function objecteur_ajouter_documents($objet, $id_objet, $files) {
 
     // On ajoute les documents à un objet SPIP.
     $ajouter_documents = charger_fonction('ajouter_documents','action');
-    $ajouter_documents(
+    return $ajouter_documents(
         'new',
         $documents,
         $objet, // Article, rubrique, autre objet spip
@@ -736,10 +736,21 @@ function objecteur_creer_objet ($def_objet, $forcer_creation) {
             return $id_objet;
         }
 
-        if ($id_parent) {
-            $id_objet = objet_inserer($type_objet, $id_parent);
+        /* Les documents sont spéciaux, on s'en occupe à part */
+        if ($type_objet == 'document') {
+
+            $id_objets = objecteur_ajouter_documents('', 0, array($options['fichier']));
+            $id_objet = array_shift($id_objets);
+            // On évite de passer le fichier à objet_modifier
+            unset($options['fichier']);
+
         } else {
-            $id_objet = objet_inserer($type_objet);
+
+            if ($id_parent) {
+                $id_objet = objet_inserer($type_objet, $id_parent);
+            } else {
+                $id_objet = objet_inserer($type_objet);
+            }
         }
 
         objet_modifier($type_objet, $id_objet, $options);
