@@ -22,7 +22,7 @@ if (!defined('_ECRIRE_INC_VERSION')) return;
  * d'option `nom` sont indexés par ordre de création. Si quelque chose
  * s'est mal passé, on retourne un message d'erreur.
  *
- * @param array $objets : Une définition d'objet, ou un tableau de
+ * @param array $objets : Une définition d'objet, ou une liste de
  *                        définitions d'objets.
  *
  * @return mixed : Un tableau d'identifiants indexés par nom d'objet,
@@ -428,8 +428,6 @@ function objecteur_valider_liste ($liste_objets) {
 /**
  * Élimine les doublons dans une liste d'objets
  *
- * Description longue
- *
  * @param array $liste_objets : La liste d'objets
  *
  * @return array : La liste sans les doublons
@@ -605,6 +603,18 @@ function objecteur_remplacer_references ($objet, $ids_objets) {
     return $objet;
 }
 
+/**
+ * Ajouter un logo à un objet
+ *
+ * @param String $objet     : Le type d'objet auquel on souhaite ajouter
+ *                            un logo
+ * @param Integer $id_objet : L'identifiant de l'objet
+ * @param String $logo      : L'image à utiliser comme logo. Peut être un
+ *                            chemin ou une adresse http://
+ *
+ * @return String : Un message d'erreur si quelque chose s'est mal
+ *                  passé, rien sinon.
+ */
 function objecteur_ajouter_logo($objet, $id_objet, $logo) {
 
     // On va commencer par faire une copie local du logo
@@ -629,6 +639,17 @@ function objecteur_ajouter_logo($objet, $id_objet, $logo) {
     return $ajouter_image($type."on".$id_objet," ", array('tmp_name' => _DIR_RACINE.$logo_chemin), true);
 }
 
+/**
+ * Ajouter un ou plusieurs documents à un objet
+ *
+ * @param String $objet     : Le type d'objet auquel on souhaite ajouter
+ *                            le ou les documents.
+ * @param Integer $id_objet : L'identifiant de l'objet
+ * @param array $files      : Une liste de fichiers pour les ou les
+ *                            documents. Chemin ou une adresse http://
+ *
+ * @return null
+ */
 function objecteur_ajouter_documents($objet, $id_objet, $files) {
     include_spip('inc/distant');
 
