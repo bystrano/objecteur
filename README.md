@@ -187,3 +187,13 @@ Le plugin Livres pourra alors associer les Livres avec les rubriques de la mani�
 ```php
 $GLOBALS['id_parents_objets']['livres'] = 'id_rubrique';
 ```
+
+
+TODO
+====
+
+
+- [ ] Quid de la suppression de documents ?
+- [ ] Les documents devraient (pouvoir?) être définis comme le reste des objets
+- [ ] La création de documents devrait retourner des id_document ?
+- [ ] Quid du nommage des documents ? Si on veut retourner des id_documents il faudra s'occuper de ça.
