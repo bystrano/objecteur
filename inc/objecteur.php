@@ -655,7 +655,20 @@ function objecteur_ajouter_documents($objet, $id_objet, $files) {
 
     $documents = array();
     foreach($files as $file) {
-        $documents[] = array('name' => $file, 'tmp_name' => $file);
+        // Les fichiers donnés par une url sont considérés comme distants
+        if (preg_match(',^https?://,', $file) === 1) {
+
+            $documents[] = array(
+                'name' => $file,
+                'distant' => true,
+                'tmp_name' => $file,
+            );
+        } else {
+            $documents[] = array(
+                'name' => $file,
+                'tmp_name' => $file,
+            );
+        }
     }
 
     // On ajoute les documents à un objet SPIP.
