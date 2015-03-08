@@ -717,13 +717,20 @@ function objecteur_ajouter_logo($objet, $id_objet, $logo) {
  * @param String $objet     : Le type d'objet auquel on souhaite ajouter
  *                            le ou les documents.
  * @param Integer $id_objet : L'identifiant de l'objet
- * @param array $files      : Une liste de fichiers pour les ou les
- *                            documents. Chemin ou une adresse http://
+ * @param array $files      : Un fichier ou une liste de fichiers pour
+ *                            les ou les documents. Chemin ou une
+ *                            adresse http://
  *
  * @return Les identifiants des documents créés
  */
 function objecteur_ajouter_documents($objet, $id_objet, $files) {
     include_spip('inc/distant');
+
+    /* Si on n'a pas passé un tableau, c'est qu'on a mis directement
+       un chemin. On en fait un tableau à un seul élément. */
+    if ( ! is_array($files)) {
+        $files = array($files);
+    }
 
     $documents = array();
     foreach($files as $file) {
@@ -818,10 +825,10 @@ function objecteur_creer_objet ($def_objet, $forcer_creation) {
                 $parent_doc = $def_objet['parent_doc'];
                 $id_objets = objecteur_ajouter_documents(
                     $parent_doc['objet'], $parent_doc['id_objet'],
-                    array($options['fichier']));
+                    $options['fichier']);
 
             } else {
-                $id_objets = objecteur_ajouter_documents('', 0, array($options['fichier']));
+                $id_objets = objecteur_ajouter_documents('', 0, $options['fichier']);
             }
 
             $id_objet = array_shift($id_objets);
