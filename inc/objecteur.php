@@ -359,6 +359,27 @@ function objecteur_calculer_liste ($objets) {
         /* Gestion des documents */
         if ($documents) {
 
+            /* Si le tableau de documents est une liste de strings,
+               c'est qu'on utilise le format simplifé. On commence
+               alors par tout compliquer :-) */
+            $format_simple = TRUE;
+            foreach ($documents as $doc) {
+                if ( ! is_string($doc)) {
+                    $format_simple = FALSE;
+                    break;
+                }
+            }
+            if ($format_simple) {
+                $documents = array_map(function ($fichier) {
+                    return array(
+                        'objet' => 'document',
+                        'options' => array(
+                            'fichier' => $fichier,
+                        ),
+                    );
+                }, $documents);
+            }
+
             /* si l'objet parent n'a pas de nom, on lui en donne un */
             if ( ! isset($objet['options']['nom'])) {
 

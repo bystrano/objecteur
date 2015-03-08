@@ -208,6 +208,50 @@ function essais_objecteur_calculer_liste(){
             ),
         ),
 
+        "Documents liés à un objet - format simplifié" => array (
+            array(
+                array(
+                    'objet' => 'article',
+                    'options' => array(
+                        'nom' => 'parent',
+                        'id_rubrique' => 2,
+                    ),
+                ),
+                array(
+                    'objet' => 'document',
+                    'options' => array(
+                        'fichier' => 'http://lorempixel.com/300/200/',
+                    ),
+                    'parent_doc' => array(
+                        'objet' => 'article',
+                        'id_objet' => '@parent@',
+                    ),
+                ),
+                array(
+                    'objet' => 'document',
+                    'options' => array(
+                        'fichier' => '/tmp/image.png',
+                    ),
+                    'parent_doc' => array(
+                        'objet' => 'article',
+                        'id_objet' => '@parent@',
+                    ),
+                ),
+            ),
+            array (
+                array(
+                    'objet' => 'article',
+                    'options' => array(
+                        'nom' => 'parent',
+                        'id_parent' => 2,
+                    ),
+                    'documents' => array(
+                        'http://lorempixel.com/300/200/',
+                        '/tmp/image.png',
+                    ),
+                ),
+            ),
+        )
     );
 
     return $essais;
