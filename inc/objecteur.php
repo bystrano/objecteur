@@ -718,11 +718,11 @@ function objecteur_creer_objet ($def_objet, $forcer_creation) {
         }
 
         // On s'occupe du logo
-        if (isset($options['logo']))
+        if (isset($options['logo']) AND $options['logo'])
             objecteur_ajouter_logo($type_objet, $id_objet, $options['logo']);
 
         // On s'occupe des documents à ajouter
-        if (isset($options['documents']))
+        if (isset($options['documents']) AND $options['document'])
             objecteur_ajouter_documents($type_objet, $id_objet, $options['documents']);
     }
 
