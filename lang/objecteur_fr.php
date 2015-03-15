@@ -6,6 +6,7 @@ if (!defined('_ECRIRE_INC_VERSION')) return;
 $GLOBALS[$GLOBALS['idx_lang']] = array(
 
     // E
+    'erreur_creation_objet_interdite' => "vous n'avez pas le droit de créer d'objets @objet@",
     'erreur_creation_objets_impossible' => "Impossible de créer les objets : @liste_objets@",
     'erreur_definition_cle_invalide' => "'@cle@' n'est pas une option valide\n@objet@",
     'erreur_definition_invalide' => "définition de l'objet invalide : @err@",

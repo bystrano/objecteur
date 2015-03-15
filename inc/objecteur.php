@@ -90,6 +90,16 @@ function inc_objecteur_dist ($objets, $forcer_creation=FALSE) {
         return $err;
     }
 
+    /* On vérifie les autorisations de création */
+    include_spip('inc/autoriser');
+    foreach ($liste_objets as $objet) {
+        $type_objet = $objet['objet'];
+        if ( ! autoriser('creer', $type_objet)) {
+            return _T('objecteur:erreur_creation_objet_interdite',
+                      array('objet' => $type_objet));
+        }
+    }
+
     $liste_objets = objecteur_ordonner_liste($liste_objets);
 
     if (is_string($liste_objets)) {
