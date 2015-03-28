@@ -143,7 +143,7 @@ function inc_objecteur_effacer_dist ($objets) {
     include_spip('inc/autoriser');
 
     /* Si le paramètre $objets à une clé 'objet', c'est qu'on a passé
-       directemenet un définition d'objet plutôt qu'une liste de
+       directement un définition d'objet plutôt qu'une liste de
        définition. On en fait alors une liste… */
     if (isset($objets['objet'])) {
         $objets = array($objets);
