@@ -187,7 +187,16 @@ Cette globale, `id_parents_objets`, est définie dans le fichier `objecteur_opti
 Le plugin Livres pourra alors associer les Livres avec les rubriques de la manière suivante :
 
 ```php
-$GLOBALS['id_parents_objets']['livres'] = 'id_rubrique';
+$GLOBALS['id_parents_objets']['livre'] = 'id_rubrique';
+```
+
+Il faut noter que lorsqu'on associe ainsi deux types d'objets éditoriaux, cette association est _obligatoire_.
+Dans notre exemple cela veut dire qu'on ne peut pas créer d'objet Livre sans spécifier une rubrique.
+
+Il est possible d'annuler cette contrainte en éditant la globale `objets_orphelins`, qui est une liste des noms d'objets pour lesquels l'id_parent est optionel :
+
+```php
+$GLOBALS['objets_orphelins'][] = 'livre';
 ```
 
 
