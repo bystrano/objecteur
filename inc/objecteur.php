@@ -863,7 +863,9 @@ function objecteur_creer_objet ($def_objet, $forcer_creation) {
             }
         }
 
-        objet_modifier($type_objet, $id_objet, $options);
+        if ($err = objet_modifier($type_objet, $id_objet, $options)) {
+            return $err;
+        }
 
         /* une fois l'objet créé, on s'occupe d'un éventuel lien de
            traduction */
