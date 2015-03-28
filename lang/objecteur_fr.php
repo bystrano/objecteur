@@ -17,6 +17,7 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
     'erreur_doublon_nom' => "Le nom '@nom@' est défini plusieurs fois !",
     'erreur_liste_invalide' => "La liste n'est pas valide : @err@",
     'erreur_objet_introuvable' => "objet introuvable\n@objet@",
+    'erreur_objet_orphelin' => "vous devez spécifier un id_parent pour les @objets@",
     'erreur_option_manquante' => "La définition de l'objet n'as pas d'option '@option@' :\n@objet@",
     'erreur_reference_manquante' => "référence manquante : @reference@",
     'erreur_suppression_impossible' => "Impossible de supprimer les objets : @liste_objets@",

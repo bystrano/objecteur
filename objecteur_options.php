@@ -37,6 +37,11 @@ $GLOBALS['id_parents_objets'] = array(
     'site'      => 'id_rubrique',
 );
 
+/* Il est en général obligatoire de donner un id_parent lorsque c'est
+   possible, sauf pour certains objets spéciaux. La liste de ces
+   objets spéciaux est définie ici. */
+$GLOBALS['objets_orphelins'] = array('rubrique');
+
 include_spip('objecteur_fonctions');
 
 if (plugin_est_actif('gma')) {

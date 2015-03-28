@@ -90,6 +90,18 @@ function inc_objecteur_dist ($objets, $forcer_creation=FALSE) {
         return $err;
     }
 
+    /* On vérifie qu'il n'y ait pas d'orphelins */
+    foreach ($liste_objets as $objet) {
+
+        if (array_key_exists(objet_type($objet['objet']), $GLOBALS['id_parents_objets']) AND
+            ( ! in_array(objet_type($objet['objet']), $GLOBALS['objets_orphelins'])) AND
+            ( ! array_key_exists($GLOBALS['id_parents_objets'][objet_type($objet['objet'])], $objet['options']))) {
+
+            return _T('objecteur:erreur_objet_orphelin',
+                      array('objets' => table_objet($objet['objet'])));
+        }
+    }
+
     /* On vérifie les autorisations de création */
     include_spip('inc/autoriser');
     foreach ($liste_objets as $objet) {
