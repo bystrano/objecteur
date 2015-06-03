@@ -337,7 +337,7 @@ function objecteur_calculer_liste ($objets) {
         $liste_objets[] = $objet;
 
         /* Gestion des objets enfants */
-        if ($enfants) {
+        if (isset($enfants) AND $enfants) {
 
             /* à l'image du paramètre $objets de la fonction
                objecteur, la clé enfants peut être une définition
@@ -369,7 +369,7 @@ function objecteur_calculer_liste ($objets) {
         }
 
         /* Gestion des documents */
-        if ($documents) {
+        if (isset($documents) AND $documents) {
 
             /* Si le tableau de documents est une liste de strings,
                c'est qu'on utilise le format simplifé. On commence
@@ -491,7 +491,7 @@ function objecteur_valider_liste ($liste_objets) {
     $noms_objets = array();
     foreach ($liste_objets as $objet) {
 
-        if ( ! $objet['options']['nom']) continue;
+        if (( ! isset($objet['options']['nom'])) or ( ! $objet['options']['nom'])) continue;
 
         if ( ! in_array($objet['options']['nom'], $noms_objets)) {
             $noms_objets[] = $objet['options']['nom'];
@@ -856,7 +856,7 @@ function objecteur_creer_objet ($def_objet, $forcer_creation) {
 
         } else {
 
-            if ($id_parent) {
+            if (isset($id_parent) && $id_parent) {
                 $id_objet = objet_inserer($type_objet, $id_parent);
             } else {
                 $id_objet = objet_inserer($type_objet);
@@ -869,7 +869,7 @@ function objecteur_creer_objet ($def_objet, $forcer_creation) {
 
         /* une fois l'objet créé, on s'occupe d'un éventuel lien de
            traduction */
-        if ($id_trad) {
+        if (isset($id_trad) && $id_trad) {
             $referencer_traduction = charger_fonction('referencer_traduction','action');
             $referencer_traduction($type_objet, $id_objet,$id_trad);
         }

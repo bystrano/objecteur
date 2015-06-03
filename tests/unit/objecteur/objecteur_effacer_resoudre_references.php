@@ -55,7 +55,7 @@ $objets_temporaires = array(
 
 $ids_objets_temporaires = $objecteur($objets_temporaires);
 
-if (is_string($ids)) {
+if (isset($ids) and is_string($ids)) {
     die("Impossible de créer les objets temporaires $ids");
 }
 
