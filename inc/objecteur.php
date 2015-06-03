@@ -253,7 +253,8 @@ function objecteur_valider_definition ($def_objet) {
 
     if ( ! table_objet_sql($type_objet)) {
         return _T('objecteur:erreur_definition_type_objet_introuvable',
-                  array('objet' => $string_objet));
+                  array('type_objet' => $type_objet,
+                        'objet' => $string_objet));
     }
 
     include_spip('base/abstract_sql');
