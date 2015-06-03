@@ -70,6 +70,9 @@ function maj_meta ($nom_meta, $cle, $valeur=NULL) {
  **/
 function id_parent_objet ($type) {
 
+    /* On s'assure qu'on utilise pas une variante du nom du type */
+    $type = objet_type($type);
+
     if (isset($GLOBALS['id_parents_objets'][$type])) {
         return $GLOBALS['id_parents_objets'][$type];
     } else {

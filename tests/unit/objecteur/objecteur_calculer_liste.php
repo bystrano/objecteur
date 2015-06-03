@@ -167,6 +167,29 @@ function essais_objecteur_calculer_liste(){
             ),
         ),
 
+        "Variante de nom d'objet (ici groupe_mot au lieu de groupe_mots)" => array(
+            array (
+                array(
+                    'objet' => 'groupe_mot',
+                    'options' => array (
+                        'nom' => 'groupe_test',
+                        'titre' => 'test tstts',
+                        'id_parent' => 0,
+                    ),
+                ),
+            ),
+            array(
+                array(
+                    'objet' => 'groupe_mot',
+                    'options' =>  array(
+                        'nom' => 'groupe_test',
+                        'titre' =>  'test tstts',
+                        'id_parent' => 0,
+                    ),
+                ),
+            ),
+        ),
+
         "Documents liés à un objet" => array (
             array(
                 array(
