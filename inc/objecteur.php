@@ -327,6 +327,7 @@ function objecteur_calculer_liste ($objets) {
             $objet['options'][id_parent_objet($objet['objet'])] = $id_parent;
         }
 
+        $enfants = FALSE;
         if (isset($objet['enfants']) AND $enfants = $objet['enfants']) {
             unset($objet['enfants']);
         }

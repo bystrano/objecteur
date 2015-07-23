@@ -148,6 +148,117 @@ function essais_objecteur_calculer_liste(){
             ),
         ),
 
+        "Famille complexe" => array(
+            array(
+                array (
+                    'objet' => 'rubrique',
+                    'options' =>
+                    array (
+                        'titre' => 'La rubrique racine',
+                        'nom' => '__rubrique-2',
+                    ),
+                ),
+                array (
+                    'objet' => 'rubrique',
+                    'options' =>
+                    array (
+                        'titre' => '10. Item One',
+                        'id_parent' => '@__rubrique-2@',
+                    ),
+                ),
+                array (
+                    'objet' => 'rubrique',
+                    'options' =>
+                    array (
+                        'titre' => '20. A parent item',
+                        'id_parent' => '@__rubrique-2@',
+                        'nom' => '__rubrique-3',
+                    ),
+                ),
+                array (
+                    'objet' => 'rubrique',
+                    'options' =>
+                    array (
+                        'titre' => '10. A link',
+                        'id_parent' => '@__rubrique-3@',
+                    ),
+                ),
+                array (
+                    'objet' => 'rubrique',
+                    'options' =>
+                    array (
+                        'titre' => '20. Another link',
+                        'id_parent' => '@__rubrique-3@',
+                    ),
+                ),
+                array (
+                    'objet' => 'rubrique',
+                    'options' =>
+                    array (
+                        'titre' => '30. Die Linke',
+                        'id_parent' => '@__rubrique-3@',
+                    ),
+                ),
+                array (
+                    'objet' => 'rubrique',
+                    'options' =>
+                    array (
+                        'titre' => '30. Last item',
+                        'id_parent' => '@__rubrique-2@',
+                    ),
+                ),
+            ),
+
+            array(
+                array(
+                    'objet' => 'rubrique',
+                    'options' => array(
+                        'titre' => 'La rubrique racine',
+                    ),
+                    'enfants' => array(
+                        array(
+                            'objet' => 'rubrique',
+                            'options' => array(
+                                'titre' => '10. Item One',
+                            ),
+                        ),
+                        array(
+                            'objet' => 'rubrique',
+                            'options' => array(
+                                'titre' => '20. A parent item',
+                            ),
+                            'enfants' => array(
+                                array(
+                                    'objet' => 'rubrique',
+                                    'options' => array(
+                                        'titre' => '10. A link',
+                                    ),
+                                ),
+                                array(
+                                    'objet' => 'rubrique',
+                                    'options' => array(
+                                        'titre' => '20. Another link',
+                                    ),
+                                ),
+                                array(
+                                    'objet' => 'rubrique',
+                                    'options' => array(
+                                        'titre' => '30. Die Linke',
+                                    ),
+                                ),
+                            ),
+                        ),
+                        array(
+                            'objet' => 'rubrique',
+                            'options' => array(
+                                'titre' => '30. Last item',
+                            ),
+                        ),
+                    ),
+                ),
+            ),
+        ),
+
         "On remplace les clés id_parent" => array (
             array (
                 array(
