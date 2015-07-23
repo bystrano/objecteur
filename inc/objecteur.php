@@ -437,6 +437,7 @@ function objecteur_effacer_calculer_liste ($objets) {
     foreach ($objets as $objet) {
 
         /* On commence par supprimer les enfants */
+        $enfants = FALSE;
         if (isset($objet['enfants']) AND $enfants = $objet['enfants']) {
 
             /* à l'image du paramètre $objets de la fonction
