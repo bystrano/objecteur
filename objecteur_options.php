@@ -44,6 +44,5 @@ $GLOBALS['objets_orphelins'] = array('rubrique');
 
 include_spip('objecteur_fonctions');
 
-if (plugin_est_actif('gma')) {
-    $GLOBALS['id_parents_objets']['groupe_mots'] = 'id_parent';
-}
+// On ajoute ceci au cas où le plugin GMA est actif.
+$GLOBALS['id_parents_objets']['groupe_mots'] = 'id_parent';
