@@ -212,6 +212,11 @@ function objecteur_trouver ($def_objet) {
         unset($def_objet['options'][$element]);
     }
 
+    /* S'il n'y a rien pour comparer on arrête */
+    if ( ! count($def_objet['options'])) {
+        return 0;
+    }
+
     return intval(sql_getfetsel(
         id_table_objet($def_objet['objet']),
         table_objet_sql($def_objet['objet']),
