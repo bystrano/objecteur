@@ -80,7 +80,7 @@ La fonction `objecteur_effacer` sert à supprimer des objets éditoriaux.
 On l'utilise comme la fonction `objecteur` :
 
 ```php
-$objecteur_effacer = charger_fonction('objecteur_effacer', 'inc');
+$objecteur_effacer = charger_fonction('effacer', 'inc/objecteur');
 $objecteur_effacer(
     array(
         'objet' => 'mot',
