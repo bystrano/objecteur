@@ -43,7 +43,7 @@ $objecteur(array(
 ));
 ```
 
-S'il y a déjà des objets éditoriaux qui correspondent aux définitions, on ne crée pas de nouveaux objets.
+S'il y a déjà des objets éditoriaux qui correspondent *exactement* aux définitions, on ne crée pas de nouveaux objets.
 Dans tous les cas, la fonction retourne un tableau d'identifiants des objets en question, indexés par leurs noms.
 Sur un SPIP fraîchement installé, l'exemple ci-dessus retournerait :
 
