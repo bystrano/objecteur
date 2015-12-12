@@ -9,9 +9,6 @@
  * @package    SPIP\Objecteur\Fonctions
  */
 
-if (!defined('_ECRIRE_INC_VERSION')) return;
-
-
 /**
  * Vrai si le plugin correspondant au préfix donné est activé, faux sinon
  *
@@ -19,12 +16,14 @@ if (!defined('_ECRIRE_INC_VERSION')) return;
  *
  * @return bool : True si le plugin est activé, False sinon
  */
-function plugin_est_actif ($prefix_plugin) {
+function plugin_est_actif($prefix_plugin) {
 
-    include_spip('inc/plugin');
+	include_spip('inc/plugin');
 
-    return array_key_exists(strtoupper($prefix_plugin),
-                            liste_chemin_plugin_actifs());
+	return array_key_exists(
+		strtoupper($prefix_plugin),
+		liste_chemin_plugin_actifs()
+	);
 }
 
 /**
@@ -41,20 +40,22 @@ function plugin_est_actif ($prefix_plugin) {
  * @param mixed
  *     La valeur de la meta
  */
-function maj_meta ($nom_meta, $cle, $valeur=NULL) {
+function maj_meta($nom_meta, $cle, $valeur = null) {
 
-    include_spip('inc/meta');
+	include_spip('inc/meta');
 
-    $config = lire_config($nom_meta);
-    $config = $config ? $config : array();
+	$config = lire_config($nom_meta);
+	$config = $config ? $config : array();
 
-    if (is_null($valeur)) {
-        if (isset($config[$cle])) { unset($config[$cle]); }
-    } else {
-        $config[$cle] = $valeur;
-    }
+	if (is_null($valeur)) {
+		if (isset($config[$cle])) {
+			unset($config[$cle]);
+		}
+	} else {
+		$config[$cle] = $valeur;
+	}
 
-    ecrire_meta($nom_meta, serialize($config));
+	ecrire_meta($nom_meta, serialize($config));
 }
 
 /**
@@ -68,14 +69,14 @@ function maj_meta ($nom_meta, $cle, $valeur=NULL) {
  *
  * @return string : Nom de la clé primaire
  **/
-function id_parent_objet ($type) {
+function id_parent_objet($type) {
 
-    /* On s'assure qu'on utilise pas une variante du nom du type */
-    $type = objet_type($type);
+	/* On s'assure qu'on utilise pas une variante du nom du type */
+	$type = objet_type($type);
 
-    if (isset($GLOBALS['id_parents_objets'][$type])) {
-        return $GLOBALS['id_parents_objets'][$type];
-    } else {
-        return '';
-    }
+	if (isset($GLOBALS['id_parents_objets'][$type])) {
+		return $GLOBALS['id_parents_objets'][$type];
+	} else {
+		return '';
+	}
 }

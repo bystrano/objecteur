@@ -8,8 +8,6 @@
  * @licence    GNU/GPL
  */
 
-if (!defined('_ECRIRE_INC_VERSION')) return;
-
 /**
  * Créer ou retrouver des objets
  *
@@ -33,98 +31,104 @@ if (!defined('_ECRIRE_INC_VERSION')) return;
  *
 $objecteur = charger_fonction('objecteur', 'inc');
 $objecteur(array(
-    array(
-        'objet' => 'rubrique',
-        'options' => array(
-            'nom' => 'rubrique_hors_menu',
-            'titre' => "99. Hors-menu",
-        ),
-        'enfants' =>  array(
-            array(
-                'objet' => 'rubrique',
-                'options' => array(
-                    'nom' => 'rubrique_agenda',
-                    'titre' => 'Agenda',
-                ),
-            ),
-        ),
-    ),
-    array(
-        'objet' => 'mot',
-        'options' => array(
-            'titre' => 'humeur',
-        ),
-    ),
+	array(
+		'objet' => 'rubrique',
+		'options' => array(
+			'nom' => 'rubrique_hors_menu',
+			'titre' => "99. Hors-menu",
+		),
+		'enfants' =>  array(
+			array(
+				'objet' => 'rubrique',
+				'options' => array(
+					'nom' => 'rubrique_agenda',
+					'titre' => 'Agenda',
+				),
+			),
+		),
+	),
+	array(
+		'objet' => 'mot',
+		'options' => array(
+			'titre' => 'humeur',
+		),
+	),
 ));
 
 -> array(
-    0 => 1, // l'identifiant du mot-clé "humeur"
-    'rubrique_hors_menu' => 1,
-    'rubrique_agenda' => 2,
+	0 => 1, // l'identifiant du mot-clé "humeur"
+	'rubrique_hors_menu' => 1,
+	'rubrique_agenda' => 2,
 )
  *
  */
-function inc_objecteur_dist ($objets, $forcer_creation=FALSE) {
+function inc_objecteur_dist($objets, $forcer_creation = false) {
 
-    include_spip('action/editer_objet');
+	include_spip('action/editer_objet');
 
-    /* Si le paramètre $objets à une clé 'objet', c'est qu'on a passé
-       directemenet un définition d'objet plutôt qu'une liste de
-       définition. On en fait alors une liste… */
-    if (isset($objets['objet'])) {
-        $objets = array($objets);
-    }
+	/* Si le paramètre $objets à une clé 'objet', c'est qu'on a passé
+	   directemenet un définition d'objet plutôt qu'une liste de
+	   définition. On en fait alors une liste… */
+	if (isset($objets['objet'])) {
+		$objets = array($objets);
+	}
 
-    foreach ($objets as $objet) {
+	foreach ($objets as $objet) {
 
-        if ($err = objecteur_valider_definition($objet)) {
+		if ($err = objecteur_valider_definition($objet)) {
 
-            return _T('objecteur:erreur_definition_invalide',
-                      array('err' => $err));
-        }
-    }
+			return _T(
+				'objecteur:erreur_definition_invalide',
+				array('err' => $err)
+			);
+		}
+	}
 
-    $liste_objets = objecteur_calculer_liste($objets);
+	$liste_objets = objecteur_calculer_liste($objets);
 
-    if ($err = objecteur_valider_liste($liste_objets)) {
-        return $err;
-    }
+	if ($err = objecteur_valider_liste($liste_objets)) {
+		return $err;
+	}
 
-    /* On vérifie qu'il n'y ait pas d'orphelins */
-    foreach ($liste_objets as $objet) {
+	/* On vérifie qu'il n'y ait pas d'orphelins */
+	foreach ($liste_objets as $objet) {
 
-        if (array_key_exists(objet_type($objet['objet']), $GLOBALS['id_parents_objets']) AND
-            ( ! in_array(objet_type($objet['objet']), $GLOBALS['objets_orphelins'])) AND
-            ( ! array_key_exists($GLOBALS['id_parents_objets'][objet_type($objet['objet'])], $objet['options']))) {
+		if (array_key_exists(objet_type($objet['objet']), $GLOBALS['id_parents_objets']) and
+			( ! in_array(objet_type($objet['objet']), $GLOBALS['objets_orphelins'])) and
+			( ! array_key_exists($GLOBALS['id_parents_objets'][objet_type($objet['objet'])], $objet['options']))) {
 
-            return _T('objecteur:erreur_objet_orphelin',
-                      array('objets' => table_objet($objet['objet'])));
-        }
-    }
+			return _T(
+				'objecteur:erreur_objet_orphelin',
+				array('objets' => table_objet($objet['objet']))
+			);
+		}
+	}
 
-    $liste_objets = objecteur_ordonner_liste($liste_objets);
+	$liste_objets = objecteur_ordonner_liste($liste_objets);
 
-    if (is_string($liste_objets)) {
-        return _T('objecteur:erreur_creation_objets_impossible',
-                  array('liste_objets' => $liste_objets));
-    }
+	if (is_string($liste_objets)) {
+		return _T(
+			'objecteur:erreur_creation_objets_impossible',
+			array('liste_objets' => $liste_objets)
+		);
+	}
 
-    $ids_objets = array();
+	$ids_objets = array();
 
-    foreach ($liste_objets as $objet) {
+	foreach ($liste_objets as $objet) {
 
-        $objet = objecteur_remplacer_references($objet, $ids_objets);
+		$objet = objecteur_remplacer_references($objet, $ids_objets);
 
-        $id_objet = objecteur_creer_objet($objet, $forcer_creation);
+		$id_objet = objecteur_creer_objet($objet, $forcer_creation);
 
-        if ($objet['options']['nom']) {
-            $ids_objets[$objet['options']['nom']] = $id_objet;
-        } else {
-            $ids_objets[] = $id_objet;
-        }
-    }
+		if ($objet['options']['nom']) {
+			$ids_objets[$objet['options']['nom']] = $id_objet;
+		} else {
+			$ids_objets[] = $id_objet;
+		}
+	}
 
-    return $ids_objets;
+	return $ids_objets;
 }
 
 /**
@@ -139,61 +143,71 @@ function inc_objecteur_dist ($objets, $forcer_creation=FALSE) {
  * @return mixed : Un message d'erreur si quelque chose s'est mal
  *                 passé, rien sinon
  */
-function inc_objecteur_effacer_dist ($objets) {
+function inc_objecteur_effacer_dist($objets) {
 
-    include_spip('base/abstract_sql');
-    include_spip('inc/autoriser');
+	include_spip('base/abstract_sql');
+	include_spip('inc/autoriser');
 
-    /* Si le paramètre $objets à une clé 'objet', c'est qu'on a passé
-       directement un définition d'objet plutôt qu'une liste de
-       définition. On en fait alors une liste… */
-    if (isset($objets['objet'])) {
-        $objets = array($objets);
-    }
+	/* Si le paramètre $objets à une clé 'objet', c'est qu'on a passé
+	   directement un définition d'objet plutôt qu'une liste de
+	   définition. On en fait alors une liste… */
+	if (isset($objets['objet'])) {
+		$objets = array($objets);
+	}
 
-    foreach ($objets as $objet) {
+	foreach ($objets as $objet) {
 
-        if ($err = objecteur_valider_definition($objet)) {
+		if ($err = objecteur_valider_definition($objet)) {
 
-            return _T('objecteur:erreur_definition_invalide',
-                      array('err' => $err));
-        }
-    }
+			return _T(
+				'objecteur:erreur_definition_invalide',
+				array('err' => $err)
+			);
+		}
+	}
 
-    $liste_objets = objecteur_effacer_calculer_liste($objets);
+	$liste_objets = objecteur_effacer_calculer_liste($objets);
 
-    if ($err = objecteur_valider_liste($liste_objets)) {
-        return $err;
-    }
+	if ($err = objecteur_valider_liste($liste_objets)) {
+		return $err;
+	}
 
-    $liste_objets = objecteur_effacer_resoudre_references($liste_objets);
+	$liste_objets = objecteur_effacer_resoudre_references($liste_objets);
 
-    if (is_string($liste_objets)) {
-        return _T('objecteur:erreur_suppression_impossible',
-                  array('liste_objets' => $liste_objets));
-    }
+	if (is_string($liste_objets)) {
+		return _T(
+			'objecteur:erreur_suppression_impossible',
+			array('liste_objets' => $liste_objets)
+		);
+	}
 
-    foreach ($liste_objets as $objet) {
+	foreach ($liste_objets as $objet) {
 
-        $id_objet = objecteur_trouver($objet);
+		$id_objet = objecteur_trouver($objet);
 
-        if ($id_objet) {
-            if (autoriser('supprimer', $objet['objet'], $id_objet)) {
-                sql_delete(table_objet_sql($objet['objet']),
-                           id_table_objet($objet['objet']) . '=' . intval($id_objet));
-            } else {
-                return _T('objecteur:erreur_suppression_non_autorisee',
-                          array(
-                              'objet' => $objet['objet'],
-                              'id_objet' => $id_objet,
-                          ));
-            }
+		if ($id_objet) {
+			if (autoriser('supprimer', $objet['objet'], $id_objet)) {
+				sql_delete(
+					table_objet_sql($objet['objet']),
+					id_table_objet($objet['objet']) . '=' . intval($id_objet)
+				);
+			} else {
+				return _T(
+					'objecteur:erreur_suppression_non_autorisee',
+					array(
+						'objet' => $objet['objet'],
+						'id_objet' => $id_objet,
+					)
+				);
+			}
 
-        } else {
-            return _T('objecteur:erreur_suppression_objet_introuvable',
-                      array('objet' => var_export($objet, TRUE)));
-        }
-    }
+		} else {
+			return _T(
+				'objecteur:erreur_suppression_objet_introuvable',
+				array('objet' => var_export($objet, true))
+			);
+		}
+	}
 }
 
 /**
@@ -203,26 +217,27 @@ function inc_objecteur_effacer_dist ($objets) {
  *
  * @return int : L'identifiant de l'objet trouvé
  */
-function objecteur_trouver ($def_objet) {
+function objecteur_trouver($def_objet) {
 
-    include_spip('base/abstract_sql');
+	include_spip('base/abstract_sql');
 
-    // On ne construit aucune requête SQL avec un élément de la white liste
-    foreach($GLOBALS['objecteur_white_list'] as $element) {
-        unset($def_objet['options'][$element]);
-    }
+	// On ne construit aucune requête SQL avec un élément de la white liste
+	foreach ($GLOBALS['objecteur_white_list'] as $element) {
+		unset($def_objet['options'][$element]);
+	}
 
-    /* S'il n'y a rien pour comparer on arrête */
-    if ( ! count($def_objet['options'])) {
-        return 0;
-    }
+	/* S'il n'y a rien pour comparer on arrête */
+	if (! count($def_objet['options'])) {
+		return 0;
+	}
 
-    return intval(sql_getfetsel(
-        id_table_objet($def_objet['objet']),
-        table_objet_sql($def_objet['objet']),
-        array_map(function ($index, $element) {
-            return $index . '=' . sql_quote($element);
-        }, array_keys($def_objet['options']), $def_objet['options'])));
+	return intval(sql_getfetsel(
+		id_table_objet($def_objet['objet']),
+		table_objet_sql($def_objet['objet']),
+		array_map(function ($index, $element) {
+			return $index . '=' . sql_quote($element);
+		}, array_keys($def_objet['options']), $def_objet['options'])
+	));
 }
 
 /**
@@ -233,74 +248,86 @@ function objecteur_trouver ($def_objet) {
  * @return mixed : Un message d'erreur si la définition est invalide,
  *                 rien sinon.
  */
-function objecteur_valider_definition ($def_objet) {
+function objecteur_valider_definition($def_objet) {
 
-    $string_objet = var_export($def_objet, TRUE);
+	$string_objet = var_export($def_objet, true);
 
-    if ( ! is_array($def_objet)) {
-        return _T('objecteur:erreur_definition_pas_tableau',
-                  array('objet' => $string_objet));
-    }
+	if (! is_array($def_objet)) {
+		return _T(
+			'objecteur:erreur_definition_pas_tableau',
+			array('objet' => $string_objet)
+		);
+	}
 
-    if ( ! isset($def_objet['objet'])) {
-        return _T('objecteur:erreur_definition_pas_cle_objet',
-                  array('objet' => $string_objet));
-    }
+	if (! isset($def_objet['objet'])) {
+		return _T(
+			'objecteur:erreur_definition_pas_cle_objet',
+			array('objet' => $string_objet)
+		);
+	}
 
-    if ( ! isset($def_objet['options'])) {
-        return _T('objecteur:erreur_definition_pas_cle_options',
-                  array('objet' => $string_objet));
-        return ;
-    }
+	if (! isset($def_objet['options'])) {
+		return _T(
+			'objecteur:erreur_definition_pas_cle_options',
+			array('objet' => $string_objet)
+		);
+		return ;
+	}
 
-    $type_objet = $def_objet['objet'];
-    $options = $def_objet['options'];
+	$type_objet = $def_objet['objet'];
+	$options = $def_objet['options'];
 
-    if ( ! table_objet_sql($type_objet)) {
-        return _T('objecteur:erreur_definition_type_objet_introuvable',
-                  array('type_objet' => $type_objet,
-                        'objet' => $string_objet));
-    }
+	if (! table_objet_sql($type_objet)) {
+		return _T(
+			'objecteur:erreur_definition_type_objet_introuvable',
+			array('type_objet' => $type_objet,
+			      'objet' => $string_objet)
+		);
+	}
 
-    include_spip('base/abstract_sql');
+	include_spip('base/abstract_sql');
 
-    $desc_table = description_table(table_objet_sql($type_objet));
-    $champs_table = array_keys($desc_table['field']);
+	$desc_table = description_table(table_objet_sql($type_objet));
+	$champs_table = array_keys($desc_table['field']);
 
-    foreach ($options as $cle => $valeur) {
-        /* Les options peuvent être dans la white_list, id_parent
-           ou un champ de la table du type d'objet en question */
-        if ( (!in_array($cle, $GLOBALS['objecteur_white_list']))
-            AND ($cle !== 'id_parent') // L'id_parent n'est pas dans la white liste
-            AND ( ! in_array($cle, $champs_table))) {
+	foreach ($options as $cle => $valeur) {
+		/* Les options peuvent être dans la white_list, id_parent
+		   ou un champ de la table du type d'objet en question */
+		if ((! in_array($cle, $GLOBALS['objecteur_white_list']))
+			and ($cle !== 'id_parent') // L'id_parent n'est pas dans la white liste
+			and (! in_array($cle, $champs_table))) {
 
-            return _T('objecteur:erreur_definition_cle_invalide',
-                      array(
-                          'cle' => $cle,
-                          'objet' => $string_objet,
-                      ));
-        }
-    }
+			return _T(
+				'objecteur:erreur_definition_cle_invalide',
+				array(
+					'cle' => $cle,
+					'objet' => $string_objet,
+				)
+			);
+		}
+	}
 
-    /* les documents nécessitent une option fichier */
-    if (($type_objet === 'document')
-        AND ( ! isset($options['fichier']))) {
+	/* les documents nécessitent une option fichier */
+	if (($type_objet === 'document')
+		and (! isset($options['fichier']))) {
 
-        return _T('objecteur:erreur_option_manquante',
-                  array(
-                      'option' => 'fichier',
-                      'objet' => $string_objet,
-                  ));
-    }
+		return _T(
+			'objecteur:erreur_option_manquante',
+			array(
+				'option' => 'fichier',
+				'objet' => $string_objet,
+			)
+		);
+	}
 
-    /* Si l'objet est valide, on teste récursivement les enfants */
-    $enfants = isset($def_objet['enfants']) ? $def_objet['enfants'] : array();
+	/* Si l'objet est valide, on teste récursivement les enfants */
+	$enfants = isset($def_objet['enfants']) ? $def_objet['enfants'] : array();
 
-    foreach ($enfants as $enfant) {
-        if ($err = objecteur_valider_definition($enfant)) {
-            return $err;
-        }
-    }
+	foreach ($enfants as $enfant) {
+		if ($err = objecteur_valider_definition($enfant)) {
+			return $err;
+		}
+	}
 }
 
 /* Pour nommer automatiquement les objets non-nommés, on les numérote
@@ -318,111 +345,111 @@ $GLOBALS['objecteur_compteur'] = 0;
  * @param array $objets : une liste de définitions d'objets
  * @return array : une liste d'objets sans enfants, prêts à être créés
  */
-function objecteur_calculer_liste ($objets) {
+function objecteur_calculer_liste($objets) {
 
-    $liste_objets = array();
+	$liste_objets = array();
 
-    foreach ($objets as $objet) {
+	foreach ($objets as $objet) {
 
-        /* On remplace une éventuelle clé 'id_parent' par une clé du nom
-           du champ id_parent du type d'objet en question. */
-        if (isset($objet['options']['id_parent'])) {
-            $id_parent = $objet['options']['id_parent'];
-            unset($objet['options']['id_parent']);
-            $objet['options'][id_parent_objet($objet['objet'])] = $id_parent;
-        }
+		/* On remplace une éventuelle clé 'id_parent' par une clé du nom
+		   du champ id_parent du type d'objet en question. */
+		if (isset($objet['options']['id_parent'])) {
+			$id_parent = $objet['options']['id_parent'];
+			unset($objet['options']['id_parent']);
+			$objet['options'][id_parent_objet($objet['objet'])] = $id_parent;
+		}
 
-        $enfants = FALSE;
-        if (isset($objet['enfants']) AND $enfants = $objet['enfants']) {
-            unset($objet['enfants']);
-        }
+		$enfants = false;
+		if (isset($objet['enfants']) and $enfants = $objet['enfants']) {
+			unset($objet['enfants']);
+		}
 
-        if (isset($objet['documents']) AND $documents = $objet['documents']) {
-            unset($objet['documents']);
-        }
+		if (isset($objet['documents']) and $documents = $objet['documents']) {
+			unset($objet['documents']);
+		}
 
-        $liste_objets[] = $objet;
+		$liste_objets[] = $objet;
 
-        /* Gestion des objets enfants */
-        if (isset($enfants) AND $enfants) {
+		/* Gestion des objets enfants */
+		if (isset($enfants) and $enfants) {
 
-            /* à l'image du paramètre $objets de la fonction
-               objecteur, la clé enfants peut être une définition
-               d'objet plutôt qu'une liste de définitions. */
-            if (isset($enfants['objet'])) {
-                $enfants = array($enfants);
-            }
+			/* à l'image du paramètre $objets de la fonction
+			   objecteur, la clé enfants peut être une définition
+			   d'objet plutôt qu'une liste de définitions. */
+			if (isset($enfants['objet'])) {
+				$enfants = array($enfants);
+			}
 
-            /* si l'objet parent n'a pas de nom, on lui en donne un */
-            if ( ! isset($objet['options']['nom'])) {
+			/* si l'objet parent n'a pas de nom, on lui en donne un */
+			if (! isset($objet['options']['nom'])) {
 
-                $objet['options']['nom'] = '__' . $objet['objet'] . '-'
-                    . $GLOBALS['objecteur_compteur'];
+				$objet['options']['nom'] = '__' . $objet['objet'] . '-'
+					. $GLOBALS['objecteur_compteur'];
 
-                $GLOBALS['objecteur_compteur'] += 1;
-                /* On remplace l'objet qu'on vient de mettre dans la
-                   liste par une version nommée. */
-                array_pop($liste_objets);
-                $liste_objets[] = $objet;
-            }
+				$GLOBALS['objecteur_compteur'] += 1;
+				/* On remplace l'objet qu'on vient de mettre dans la
+				   liste par une version nommée. */
+				array_pop($liste_objets);
+				$liste_objets[] = $objet;
+			}
 
-            foreach ($enfants as $i => $enfant) {
-                $enfants[$i]['options']['id_parent'] = "@" . $objet['options']['nom'] . "@";
-            }
+			foreach ($enfants as $i => $enfant) {
+				$enfants[$i]['options']['id_parent'] = '@' . $objet['options']['nom'] . '@';
+			}
 
-            $liste_enfants = objecteur_calculer_liste($enfants);
-            $liste_objets = array_merge($liste_objets, $liste_enfants);
+			$liste_enfants = objecteur_calculer_liste($enfants);
+			$liste_objets = array_merge($liste_objets, $liste_enfants);
 
-        }
+		}
 
-        /* Gestion des documents */
-        if (isset($documents) AND $documents) {
+		/* Gestion des documents */
+		if (isset($documents) and $documents) {
 
-            /* Si le tableau de documents est une liste de strings,
-               c'est qu'on utilise le format simplifé. On commence
-               alors par tout compliquer :-) */
-            $format_simple = TRUE;
-            foreach ($documents as $doc) {
-                if ( ! is_string($doc)) {
-                    $format_simple = FALSE;
-                    break;
-                }
-            }
-            if ($format_simple) {
-                $documents = array_map(function ($fichier) {
-                    return array(
-                        'objet' => 'document',
-                        'options' => array(
-                            'fichier' => $fichier,
-                        ),
-                    );
-                }, $documents);
-            }
+			/* Si le tableau de documents est une liste de strings,
+			   c'est qu'on utilise le format simplifé. On commence
+			   alors par tout compliquer :-) */
+			$format_simple = true;
+			foreach ($documents as $doc) {
+				if (! is_string($doc)) {
+					$format_simple = false;
+					break;
+				}
+			}
+			if ($format_simple) {
+				$documents = array_map(function ($fichier) {
+					return array(
+						'objet' => 'document',
+						'options' => array(
+							'fichier' => $fichier,
+						),
+					);
+				}, $documents);
+			}
 
-            /* si l'objet parent n'a pas de nom, on lui en donne un */
-            if ( ! isset($objet['options']['nom'])) {
+			/* si l'objet parent n'a pas de nom, on lui en donne un */
+			if (! isset($objet['options']['nom'])) {
 
-                $objet['options']['nom'] = '__' . $objet['objet'] . '-'
-                    . $GLOBALS['objecteur_compteur'];
+				$objet['options']['nom'] = '__' . $objet['objet'] . '-'
+					. $GLOBALS['objecteur_compteur'];
 
-                $GLOBALS['objecteur_compteur'] += 1;
-                /* On remplace l'objet qu'on vient de mettre dans la
-                   liste par une version nommée. */
-                array_pop($liste_objets);
-                $liste_objets[] = $objet;
-            }
+				$GLOBALS['objecteur_compteur'] += 1;
+				/* On remplace l'objet qu'on vient de mettre dans la
+				   liste par une version nommée. */
+				array_pop($liste_objets);
+				$liste_objets[] = $objet;
+			}
 
-            foreach ($documents as $i => $doc) {
-                $documents[$i]['parent_doc']['objet'] = $objet['objet'];
-                $documents[$i]['parent_doc']['id_objet'] = "@" . $objet['options']['nom'] . "@";
-            }
+			foreach ($documents as $i => $doc) {
+				$documents[$i]['parent_doc']['objet'] = $objet['objet'];
+				$documents[$i]['parent_doc']['id_objet'] = '@' . $objet['options']['nom'] . '@';
+			}
 
-            $liste_documents = objecteur_calculer_liste($documents);
-            $liste_objets = array_merge($liste_objets, $liste_documents);
-        }
-    }
+			$liste_documents = objecteur_calculer_liste($documents);
+			$liste_objets = array_merge($liste_objets, $liste_documents);
+		}
+	}
 
-    return $liste_objets;
+	return $liste_objets;
 }
 
 /**
@@ -435,54 +462,54 @@ function objecteur_calculer_liste ($objets) {
  * @param array $objets : une liste de définitions d'objets
  * @return array : une liste d'objets sans enfants pour suppression
  */
-function objecteur_effacer_calculer_liste ($objets) {
+function objecteur_effacer_calculer_liste($objets) {
 
-    $liste_objets = array();
+	$liste_objets = array();
 
-    foreach ($objets as $objet) {
+	foreach ($objets as $objet) {
 
-        /* On commence par supprimer les enfants */
-        $enfants = FALSE;
-        if (isset($objet['enfants']) AND $enfants = $objet['enfants']) {
+		/* On commence par supprimer les enfants */
+		$enfants = false;
+		if (isset($objet['enfants']) and $enfants = $objet['enfants']) {
 
-            /* à l'image du paramètre $objets de la fonction
-               objecteur, la clé enfants peut être une définition
-               d'objet plutôt qu'une liste de définitions. */
-            if (isset($enfants['objet'])) {
-                $enfants = array($enfants);
-            }
+			/* à l'image du paramètre $objets de la fonction
+			   objecteur, la clé enfants peut être une définition
+			   d'objet plutôt qu'une liste de définitions. */
+			if (isset($enfants['objet'])) {
+				$enfants = array($enfants);
+			}
 
-            /* si l'objet parent n'a pas de nom, on lui en donne un */
-            if ( ! isset($objet['options']['nom'])) {
+			/* si l'objet parent n'a pas de nom, on lui en donne un */
+			if (! isset($objet['options']['nom'])) {
 
-                $objet['options']['nom'] = '__' . $objet['objet'] . '-'
-                    . $GLOBALS['objecteur_compteur'];
+				$objet['options']['nom'] = '__' . $objet['objet'] . '-'
+					. $GLOBALS['objecteur_compteur'];
 
-                $GLOBALS['objecteur_compteur'] += 1;
-            }
+				$GLOBALS['objecteur_compteur'] += 1;
+			}
 
-            foreach ($enfants as $i => $enfant) {
-                $enfants[$i]['options']['id_parent'] = "@" . $objet['options']['nom'] . "@";
-            }
+			foreach ($enfants as $i => $enfant) {
+				$enfants[$i]['options']['id_parent'] = '@' . $objet['options']['nom'] . '@';
+			}
 
-            $liste_enfants = objecteur_effacer_calculer_liste($enfants);
+			$liste_enfants = objecteur_effacer_calculer_liste($enfants);
 
-            $liste_objets = array_merge($liste_objets, $liste_enfants);
-            unset($objet['enfants']);
-        }
+			$liste_objets = array_merge($liste_objets, $liste_enfants);
+			unset($objet['enfants']);
+		}
 
-        /* On remplace une éventuelle clé 'id_parent' par une clé du nom
-           du champ id_parent du type d'objet en question. */
-        if (isset($objet['options']['id_parent'])) {
-            $id_parent = $objet['options']['id_parent'];
-            unset($objet['options']['id_parent']);
-            $objet['options'][id_parent_objet($objet['objet'])] = $id_parent;
-        }
+		/* On remplace une éventuelle clé 'id_parent' par une clé du nom
+		   du champ id_parent du type d'objet en question. */
+		if (isset($objet['options']['id_parent'])) {
+			$id_parent = $objet['options']['id_parent'];
+			unset($objet['options']['id_parent']);
+			$objet['options'][id_parent_objet($objet['objet'])] = $id_parent;
+		}
 
-        $liste_objets[] = $objet;
-    }
+		$liste_objets[] = $objet;
+	}
 
-    return $liste_objets;
+	return $liste_objets;
 }
 
 /**
@@ -493,22 +520,28 @@ function objecteur_effacer_calculer_liste ($objets) {
  * @return mixed : Un message d'erreur si la liste est invalide, rien
  *                 sinon.
  */
-function objecteur_valider_liste ($liste_objets) {
+function objecteur_valider_liste($liste_objets) {
 
-    /* On teste l'unicité des noms */
-    $noms_objets = array();
-    foreach ($liste_objets as $objet) {
+	/* On teste l'unicité des noms */
+	$noms_objets = array();
+	foreach ($liste_objets as $objet) {
 
-        if (( ! isset($objet['options']['nom'])) or ( ! $objet['options']['nom'])) continue;
+		if (( ! isset($objet['options']['nom'])) or ( ! $objet['options']['nom'])) {
+			continue;
+		}
 
-        if ( ! in_array($objet['options']['nom'], $noms_objets)) {
-            $noms_objets[] = $objet['options']['nom'];
-        } else {
-            return _T('objecteur:erreur_liste_invalide',
-                      array('err' => _T('objecteur:erreur_doublon_nom',
-                                        array('nom' => $objet['options']['nom']))));
-        }
-    }
+		if (! in_array($objet['options']['nom'], $noms_objets)) {
+			$noms_objets[] = $objet['options']['nom'];
+		} else {
+			return _T(
+				'objecteur:erreur_liste_invalide',
+				array('err' => _T(
+					'objecteur:erreur_doublon_nom',
+					array('nom' => $objet['options']['nom'])
+				))
+			);
+		}
+	}
 }
 
 /**
@@ -518,17 +551,17 @@ function objecteur_valider_liste ($liste_objets) {
  *
  * @return array : La liste sans les doublons
  */
-function objecteur_dedoublonner_liste ($liste_objets) {
+function objecteur_dedoublonner_liste($liste_objets) {
 
-    $liste_filtree = array();
+	$liste_filtree = array();
 
-    foreach ($liste_objets as $objet) {
-        if ( ! in_array($objet, $liste_filtree)) {
-            $liste_filtree[] = $objet;
-        }
-    }
+	foreach ($liste_objets as $objet) {
+		if (! in_array($objet, $liste_filtree)) {
+			$liste_filtree[] = $objet;
+		}
+	}
 
-    return $liste_filtree;
+	return $liste_filtree;
 }
 
 /**
@@ -547,49 +580,51 @@ function objecteur_dedoublonner_liste ($liste_objets) {
  *                 satisfaite, la liste dans un ordre qui ne posera
  *                 pas de problème de références.
  */
-function objecteur_ordonner_liste ($liste_objets) {
+function objecteur_ordonner_liste($liste_objets) {
 
-    $ids_objets = array();
-    $liste_ordonnee = array();
+	$ids_objets = array();
+	$liste_ordonnee = array();
 
-    /* on parcourt la liste des objets, et quand les références d'un
-       objet sont connues, on le retire de la liste pour le mettre
-       dans la liste ordonnée. Quand on les a tous essayés on
-       recommence avec ceux qui restent, en espérant que les
-       références qui manquaient ont été trouvées entre temps. Si on
-       parcourt toute la liste sans trouver aucun objet à ajouter à la
-       liste ordonnée, c'est que la liste n'est pas calculable. */
-    while ($liste_objets) {
+	/* on parcourt la liste des objets, et quand les références d'un
+	   objet sont connues, on le retire de la liste pour le mettre
+	   dans la liste ordonnée. Quand on les a tous essayés on
+	   recommence avec ceux qui restent, en espérant que les
+	   références qui manquaient ont été trouvées entre temps. Si on
+	   parcourt toute la liste sans trouver aucun objet à ajouter à la
+	   liste ordonnée, c'est que la liste n'est pas calculable. */
+	while ($liste_objets) {
 
-        $nb_objets = count($liste_objets);
+		$nb_objets = count($liste_objets);
 
-        foreach ($liste_objets as $index => $objet) {
-            $err = objecteur_remplacer_references($objet, $ids_objets);
-            /* Si on a pu remplacer les références, on met l'objet
-               dans la liste ordonnée, et on le retire de la liste. */
-            if ( ! is_string($err)) {
-                $ids_objets[$objet['options']['nom']] = 'ok';
-                $liste_ordonnee[] = $objet;
-                unset($liste_objets[$index]);
-            }
-        }
+		foreach ($liste_objets as $index => $objet) {
+			$err = objecteur_remplacer_references($objet, $ids_objets);
+			/* Si on a pu remplacer les références, on met l'objet
+			   dans la liste ordonnée, et on le retire de la liste. */
+			if (! is_string($err)) {
+				$ids_objets[$objet['options']['nom']] = 'ok';
+				$liste_ordonnee[] = $objet;
+				unset($liste_objets[$index]);
+			}
+		}
 
-        /* Si le nombre d'objets dans la liste n'a pas baissé, c'est
-           qu'on tourne en rond */
-        if ((count($liste_objets) > 0) AND
-            (count($liste_objets) === $nb_objets)) {
+		/* Si le nombre d'objets dans la liste n'a pas baissé, c'est
+		   qu'on tourne en rond */
+		if ((count($liste_objets) > 0) and
+			(count($liste_objets) === $nb_objets)) {
 
-            $references_manquantes = '';
-            foreach ($liste_objets as $objet) {
-                $references_manquantes .= "\n - " . objecteur_remplacer_references($objet, $ids_objets);
-            }
+			$references_manquantes = '';
+			foreach ($liste_objets as $objet) {
+				$references_manquantes .= "\n - " . objecteur_remplacer_references($objet, $ids_objets);
+			}
 
-            return _T('objecteur:erreur_liste_invalide',
-                      array('err' => $references_manquantes));
-        }
-    }
+			return _T(
+				'objecteur:erreur_liste_invalide',
+				array('err' => $references_manquantes)
+			);
+		}
+	}
 
-    return $liste_ordonnee;
+	return $liste_ordonnee;
 }
 
 /**
@@ -609,46 +644,50 @@ function objecteur_ordonner_liste ($liste_objets) {
  *                 message d'erreur si l'une des références ne peut
  *                 être déterminée.
  */
-function objecteur_effacer_resoudre_references ($liste_objets) {
+function objecteur_effacer_resoudre_references($liste_objets) {
 
-    $liste_resolue = $liste_objets;
-    $ids_objets = array();
+	$liste_resolue = $liste_objets;
+	$ids_objets = array();
 
-    while ($liste_objets) {
+	while ($liste_objets) {
 
-        $compteur_objets_trouves = 0;
+		$compteur_objets_trouves = 0;
 
-        foreach ($liste_objets as $index => $objet) {
+		foreach ($liste_objets as $index => $objet) {
 
-            $objet = objecteur_remplacer_references($objet, $ids_objets);
+			$objet = objecteur_remplacer_references($objet, $ids_objets);
 
-            if ( ! is_string($objet)) {
-                if ($id_objet = objecteur_trouver($objet)) {
-                    $ids_objets[$objet['options']['nom']] = $id_objet;
-                } else {
-                    return _T('objecteur:erreur_objet_introuvable',
-                              array('objet' => var_export($objet, TRUE)));
-                }
-                $liste_resolue[$index] = $objet;
-                unset($liste_objets[$index]);
-                $compteur_objets_trouves++;
-            }
+			if (! is_string($objet)) {
+				if ($id_objet = objecteur_trouver($objet)) {
+					$ids_objets[$objet['options']['nom']] = $id_objet;
+				} else {
+					return _T(
+						'objecteur:erreur_objet_introuvable',
+						array('objet' => var_export($objet, true))
+					);
+				}
+				$liste_resolue[$index] = $objet;
+				unset($liste_objets[$index]);
+				$compteur_objets_trouves++;
+			}
 
-        }
+		}
 
-        if ($compteur_objets_trouves === 0) {
+		if ($compteur_objets_trouves === 0) {
 
-            $references_manquantes = '';
-            foreach ($liste_objets as $objet) {
-                $references_manquantes .= "\n - " . objecteur_remplacer_references($objet, $ids_objets);
-            }
+			$references_manquantes = '';
+			foreach ($liste_objets as $objet) {
+				$references_manquantes .= "\n - " . objecteur_remplacer_references($objet, $ids_objets);
+			}
 
-            return _T('objecteur:erreur_liste_invalide',
-                      array('err' => $references_manquantes));
-        }
-    }
+			return _T(
+				'objecteur:erreur_liste_invalide',
+				array('err' => $references_manquantes)
+			);
+		}
+	}
 
-    return $liste_resolue;
+	return $liste_resolue;
 }
 
 /**
@@ -671,28 +710,31 @@ function objecteur_effacer_resoudre_references ($liste_objets) {
  *                 message d'erreur si l'une des références ne peut
  *                 être déterminée.
  */
-function objecteur_remplacer_references ($objet, $ids_objets) {
+function objecteur_remplacer_references($objet, $ids_objets) {
 
-    foreach ($objet as $cle_principale => $valeur_principale) {
+	foreach ($objet as $cle_principale => $valeur_principale) {
 
-        if (is_array($valeur_principale)) {
+		if (is_array($valeur_principale)) {
 
-            foreach ($valeur_principale as $cle => $valeur) {
-                if (!in_array($cle, $GLOBALS['objecteur_white_list'])
-                    AND (preg_match('/^@.*@$/', $valeur) === 1)) {
-                    $reference = trim($valeur, '@');
-                    if (array_key_exists($reference, $ids_objets)) {
-                        $objet[$cle_principale][$cle] = $ids_objets[$reference];
-                    } else {
-                        return _T('objecteur:erreur_reference_manquante',
-                                  array('reference' => $reference));
-                    }
-                }
-            }
-        }
-    }
+			foreach ($valeur_principale as $cle => $valeur) {
+				if (!in_array($cle, $GLOBALS['objecteur_white_list'])
+				    and (preg_match('/^@.*@$/', $valeur) === 1)) {
 
-    return $objet;
+					$reference = trim($valeur, '@');
+					if (array_key_exists($reference, $ids_objets)) {
+						$objet[$cle_principale][$cle] = $ids_objets[$reference];
+					} else {
+						return _T(
+							'objecteur:erreur_reference_manquante',
+							array('reference' => $reference)
+						);
+					}
+				}
+			}
+		}
+	}
+
+	return $objet;
 }
 
 /**
@@ -709,26 +751,28 @@ function objecteur_remplacer_references ($objet, $ids_objets) {
  */
 function objecteur_ajouter_logo($objet, $id_objet, $logo) {
 
-    // On va commencer par faire une copie local du logo
-    include_spip('inc/distant');
-    $logo_chemin = copie_locale($logo, 'force');
+	// On va commencer par faire une copie local du logo
+	include_spip('inc/distant');
+	$logo_chemin = copie_locale($logo, 'force');
 
-    // Dans le cas de SPIP 3.1 on utilise la fonction qui va bien
-    if (include_spip('action/editer_logo'))
-        return logo_modifier($objet, $id_objet, 'on', _DIR_RACINE.$logo_chemin);
+	// Dans le cas de SPIP 3.1 on utilise la fonction qui va bien
+	if (include_spip('action/editer_logo')) {
+		return logo_modifier($objet, $id_objet, 'on', _DIR_RACINE.$logo_chemin);
+	}
 
-    // Si on est en SPIP 3.0 on délègue à la fonction ajouter_image
-    include_spip('action/iconifier');
-    $chercher_logo = charger_fonction('chercher_logo','inc');
-    $ajouter_image = charger_fonction('spip_image_ajouter','action');
+	// Si on est en SPIP 3.0 on délègue à la fonction ajouter_image
+	include_spip('action/iconifier');
+	$chercher_logo = charger_fonction('chercher_logo', 'inc');
+	$ajouter_image = charger_fonction('spip_image_ajouter', 'action');
 
-    $type = type_du_logo(id_table_objet($objet));
-    $logo = $chercher_logo($id_objet, id_table_objet($objet));
+	$type = type_du_logo(id_table_objet($objet));
+	$logo = $chercher_logo($id_objet, id_table_objet($objet));
 
-    if ($logo)
-        spip_unlink($logo[0]);
+	if ($logo) {
+		spip_unlink($logo[0]);
+	}
 
-    return $ajouter_image($type."on".$id_objet," ", array('tmp_name' => _DIR_RACINE.$logo_chemin), true);
+	return $ajouter_image($type.'on'.$id_objet,' ', array('tmp_name' => _DIR_RACINE.$logo_chemin), true);
 }
 
 /**
@@ -744,41 +788,41 @@ function objecteur_ajouter_logo($objet, $id_objet, $logo) {
  * @return Les identifiants des documents créés
  */
 function objecteur_ajouter_documents($objet, $id_objet, $files) {
-    include_spip('inc/distant');
+	include_spip('inc/distant');
 
-    /* Si on n'a pas passé un tableau, c'est qu'on a mis directement
-       un chemin. On en fait un tableau à un seul élément. */
-    if ( ! is_array($files)) {
-        $files = array($files);
-    }
+	/* Si on n'a pas passé un tableau, c'est qu'on a mis directement
+	   un chemin. On en fait un tableau à un seul élément. */
+	if (! is_array($files)) {
+		$files = array($files);
+	}
 
-    $documents = array();
-    foreach($files as $file) {
-        // Les fichiers donnés par une url sont considérés comme distants
-        if (preg_match(',^https?://,', $file) === 1) {
+	$documents = array();
+	foreach ($files as $file) {
+		// Les fichiers donnés par une url sont considérés comme distants
+		if (preg_match(',^https?://,', $file) === 1) {
 
-            $documents[] = array(
-                'name' => $file,
-                'distant' => true,
-                'tmp_name' => $file,
-            );
-        } else {
-            $documents[] = array(
-                'name' => $file,
-                'tmp_name' => $file,
-            );
-        }
-    }
+			$documents[] = array(
+				'name' => $file,
+				'distant' => true,
+				'tmp_name' => $file,
+			);
+		} else {
+			$documents[] = array(
+				'name' => $file,
+				'tmp_name' => $file,
+			);
+		}
+	}
 
-    // On ajoute les documents à un objet SPIP.
-    $ajouter_documents = charger_fonction('ajouter_documents','action');
-    return $ajouter_documents(
-        'new',
-        $documents,
-        $objet, // Article, rubrique, autre objet spip
-        $id_objet,
-        'document'
-    );
+	// On ajoute les documents à un objet SPIP.
+	$ajouter_documents = charger_fonction('ajouter_documents', 'action');
+	return $ajouter_documents(
+		'new',
+		$documents,
+		$objet, // Article, rubrique, autre objet spip
+		$id_objet,
+		'document'
+	);
 }
 
 /**
@@ -791,104 +835,111 @@ function objecteur_ajouter_documents($objet, $id_objet, $files) {
  *
  * @return int : l'identifiant de l'objet
  */
-function objecteur_creer_objet ($def_objet, $forcer_creation) {
+function objecteur_creer_objet($def_objet, $forcer_creation) {
 
-    include_spip('base/abstract_sql');
-    include_spip('action/editer_objet');
-    include_spip('objecteur_fonctions');
+	include_spip('base/abstract_sql');
+	include_spip('action/editer_objet');
+	include_spip('objecteur_fonctions');
 
-    $type_objet = objet_type($def_objet['objet']);
-    $options = $def_objet['options'];
+	$type_objet = objet_type($def_objet['objet']);
+	$options = $def_objet['options'];
 
-    if (isset($options['nom'])) unset($options['nom']);
+	if (isset($options['nom'])) {
+		unset($options['nom']);
+	}
 
-    /* On vérifie qu'on est autorisé */
-    include_spip('inc/autoriser');
-    if ( ! autoriser('creer', $type_objet)) {
-        return _T('objecteur:erreur_creation_objet_interdite',
-                  array('objet' => $type_objet));
-    }
+	/* On vérifie qu'on est autorisé */
+	include_spip('inc/autoriser');
+	if (! autoriser('creer', $type_objet)) {
+		return _T(
+			'objecteur:erreur_creation_objet_interdite',
+			array('objet' => $type_objet)
+		);
+	}
 
-    /* S'il y a déjà un objet correspondant à la description
-       on le prend plutôt que d'en créer un nouveau */
-    if ( ! $forcer_creation) {
-        $id_objet = objecteur_trouver(array('objet' => $type_objet,
-                                            'options' => $options));
-    }
+	/* S'il y a déjà un objet correspondant à la description
+	   on le prend plutôt que d'en créer un nouveau */
+	if (! $forcer_creation) {
+		$id_objet = objecteur_trouver(array('objet' => $type_objet,
+											'options' => $options));
+	}
 
-    if (array_key_exists(id_parent_objet($type_objet), $options)) {
+	if (array_key_exists(id_parent_objet($type_objet), $options)) {
 
-        $id_parent = $options[id_parent_objet($type_objet)];
-        unset($options[id_parent_objet($type_objet)]);
-    }
+		$id_parent = $options[id_parent_objet($type_objet)];
+		unset($options[id_parent_objet($type_objet)]);
+	}
 
-    /* Création d'un nouvel objet */
-    if ( ! $id_objet) {
+	/* Création d'un nouvel objet */
+	if (! $id_objet) {
 
-        /* s'il y a un id_trad, on le met de côté pour plus tard */
-        if (isset($options['id_trad'])) {
-            $id_trad = $options['id_trad'];
-            unset($options['id_trad']);
-        }
+		/* s'il y a un id_trad, on le met de côté pour plus tard */
+		if (isset($options['id_trad'])) {
+			$id_trad = $options['id_trad'];
+			unset($options['id_trad']);
+		}
 
-        /* On fait une exception pour que ça fonctionne avec le plugin
-           gma, mais à terme il faudrait plutôt implémenter l'api
-           objet_inserer pour les groupes de mot-clés avec parents */
-        if (($type_objet == 'groupe_mots') AND $id_parent) {
-            $options['id_parent'] = $id_parent;
-            unset($id_parent);
-            $id_objet = objet_inserer('groupe_mots');
-            sql_updateq('spip_groupes_mots', $options, "id_groupe=$id_objet");
-            return $id_objet;
-        }
+		/* On fait une exception pour que ça fonctionne avec le plugin
+		   gma, mais à terme il faudrait plutôt implémenter l'api
+		   objet_inserer pour les groupes de mot-clés avec parents */
+		if (($type_objet == 'groupe_mots') and $id_parent) {
+			$options['id_parent'] = $id_parent;
+			unset($id_parent);
+			$id_objet = objet_inserer('groupe_mots');
+			sql_updateq('spip_groupes_mots', $options, "id_groupe=$id_objet");
+			return $id_objet;
+		}
 
-        /* Les documents sont spéciaux, on s'en occupe à part */
-        if ($type_objet == 'document') {
+		/* Les documents sont spéciaux, on s'en occupe à part */
+		if ($type_objet == 'document') {
 
-            /* S'il y a une clé parent_doc dans la définition, c'est
-               pour définir un objet parent pour le document */
-            if (isset($def_objet['parent_doc'])) {
+			/* S'il y a une clé parent_doc dans la définition, c'est
+			   pour définir un objet parent pour le document */
+			if (isset($def_objet['parent_doc'])) {
 
-                $parent_doc = $def_objet['parent_doc'];
-                $id_objets = objecteur_ajouter_documents(
-                    $parent_doc['objet'], $parent_doc['id_objet'],
-                    $options['fichier']);
+				$parent_doc = $def_objet['parent_doc'];
+				$id_objets = objecteur_ajouter_documents(
+					$parent_doc['objet'],
+					$parent_doc['id_objet'],
+					$options['fichier']
+				);
 
-            } else {
-                $id_objets = objecteur_ajouter_documents('', 0, $options['fichier']);
-            }
+			} else {
+				$id_objets = objecteur_ajouter_documents('', 0, $options['fichier']);
+			}
 
-            $id_objet = array_shift($id_objets);
-            // On évite de passer le fichier à objet_modifier
-            unset($options['fichier']);
+			$id_objet = array_shift($id_objets);
+			// On évite de passer le fichier à objet_modifier
+			unset($options['fichier']);
 
-        } else {
+		} else {
 
-            if (isset($id_parent) && $id_parent) {
-                $id_objet = objet_inserer($type_objet, $id_parent);
-            } else {
-                $id_objet = objet_inserer($type_objet);
-            }
-        }
+			if (isset($id_parent) && $id_parent) {
+				$id_objet = objet_inserer($type_objet, $id_parent);
+			} else {
+				$id_objet = objet_inserer($type_objet);
+			}
+		}
 
-        if ($err = objet_modifier($type_objet, $id_objet, $options)) {
-            return $err;
-        }
+		if ($err = objet_modifier($type_objet, $id_objet, $options)) {
+			return $err;
+		}
 
-        /* une fois l'objet créé, on s'occupe d'un éventuel lien de
-           traduction */
-        if (isset($id_trad) && $id_trad) {
-            $referencer_traduction = charger_fonction('referencer_traduction','action');
-            $referencer_traduction($type_objet, $id_objet,$id_trad);
-        }
+		/* une fois l'objet créé, on s'occupe d'un éventuel lien de
+		   traduction */
+		if (isset($id_trad) && $id_trad) {
+			$referencer_traduction = charger_fonction('referencer_traduction', 'action');
+			$referencer_traduction($type_objet, $id_objet,$id_trad);
+		}
 
-        // On s'occupe du logo
-        if (isset($options['logo']) AND $options['logo'])
-            objecteur_ajouter_logo($type_objet, $id_objet, $options['logo']);
+		// On s'occupe du logo
+		if (isset($options['logo']) and $options['logo']) {
+			objecteur_ajouter_logo($type_objet, $id_objet, $options['logo']);
+		}
 
-    }
+	}
 
-    return $id_objet;
+	return $id_objet;
 }
 
 /**
@@ -901,16 +952,17 @@ function objecteur_creer_objet ($def_objet, $forcer_creation) {
  * @return mixed : Un message d'erreur si quelque chose s'est mal
  *                 passé, rien sinon.
  */
-function maj_objets_persistants ($nom_meta, $objets) {
+function maj_objets_persistants($nom_meta, $objets) {
 
-    include_spip('inc/meta');
-    include_spip('objecteur_fonctions');
+	include_spip('inc/meta');
+	include_spip('objecteur_fonctions');
 
-    if ( ! $ids_objets = lire_config($nom_meta)) {
-        $objecteur = charger_fonction('objecteur', 'inc');
-        $ids_objets = $objecteur($objets);
-    }
+	if (! $ids_objets = lire_config($nom_meta)) {
 
-    ecrire_meta($nom_meta, serialize($ids_objets));
-    maj_meta('objets_persistants', $nom_meta, $ids_objets);
+		$objecteur = charger_fonction('objecteur', 'inc');
+		$ids_objets = $objecteur($objets);
+	}
+
+	ecrire_meta($nom_meta, serialize($ids_objets));
+	maj_meta('objets_persistants', $nom_meta, $ids_objets);
 }

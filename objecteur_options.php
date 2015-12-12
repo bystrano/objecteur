@@ -9,15 +9,17 @@
  * @package    SPIP\Objecteur\Options
  */
 
-if (!defined('_ECRIRE_INC_VERSION')) return;
+if (!defined('_ECRIRE_INC_VERSION')) {
+	return;
+}
 
 // Utiliser une globale pour se rappeler des éléments technique
 // Ces éléments ne doivent pas subir un certain nombre de traitements
 // automatiques.
 $GLOBALS['objecteur_white_list'] = array(
-    'nom',
-    'logo',
-    'fichier',
+	'nom',
+	'logo',
+	'fichier',
 );
 
 /* Un tableau donnant les clés d'objets parents pour chaque objet
@@ -26,15 +28,15 @@ $GLOBALS['objecteur_white_list'] = array(
    d'objets. On peut redéfinir cette valeur pour y ajouter des objets
    éditoriaux. */
 $GLOBALS['id_parents_objets'] = array(
-    'article'   => 'id_rubrique',
-    'breve'     => 'id_rubrique',
-    'forum'     => 'id_parent',
-    'mot'       => 'id_groupe',
-    'petition'  => 'id_article',
-    'rubrique'  => 'id_parent',
-    'signature' => 'id_petition',
-    'syndic'    => 'id_rubrique',
-    'site'      => 'id_rubrique',
+	'article'	=> 'id_rubrique',
+	'breve'		=> 'id_rubrique',
+	'forum'		=> 'id_parent',
+	'mot'		=> 'id_groupe',
+	'petition'	=> 'id_article',
+	'rubrique'	=> 'id_parent',
+	'signature' => 'id_petition',
+	'syndic'	=> 'id_rubrique',
+	'site'		=> 'id_rubrique',
 );
 
 /* Il est en général obligatoire de donner un id_parent lorsque c'est
